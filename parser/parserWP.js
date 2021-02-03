@@ -3,27 +3,20 @@ const needle = require('needle'),
   { performance } = require('perf_hooks'),
   { validationService, fixHtmlText } = require('./helpers/helpers')
 
+
+// eslint-disable-next-line node/no-unpublished-require
+const { miffDK, miffNO } = require('../.env.js')
 const mysql    = require('mysql')
-  let connection = mysql.createConnection({
-    host     : 'mysql191993.mysql.sysedata.no',//MIFF DK
-    database : 'mysql191993',
-    user     : 'mysql191993',
-    password : '&Jwh3;~rB6ZR',
-  }),
+  let connection = mysql.createConnection(miffDK),
   mainLang = 'da'
-  // connection = mysql.createConnection({
-  //   host     : 'mysql191993.mysql.sysedata.no',//MIFF NO
-  //   database : 'mysql191993',
-  //   user     : 'mysql191993',
-  //   password : '&Jwh3;~rB6ZR',
-  // }),
+  // connection = mysql.createConnection(miffNO),
   // mainLang = 'nb'
 
 class parserWP {
   constructor () {
     this.limit = 30
     this.offset = 0
-    this.lastDate = new Date('2021-01-29T13:12:29.000Z') //DK
+    this.lastDate = new Date('2021-02-03T08:18:13.000Z') //DK
     // this.firstDate = new Date('2020-08-21T07:38:59.000Z') //DK
     // this.firstDate = new Date('2020-08-13T13:47:04.000Z') //DK
     this.firstDate = new Date('2007-09-15 12:11:07.000Z') //DK
@@ -64,12 +57,7 @@ class parserWP {
 
     this.offset = 0
     this.total = null
-    connection = mysql.createConnection({
-        host     : 'mysql191993.mysql.sysedata.no',//MIFF NO
-        database : 'mysql191993',
-        user     : 'mysql191993',
-        password : '&Jwh3;~rB6ZR',
-      }),
+    connection = mysql.createConnection(miffNO),
       mainLang = 'nb'
     this.lastDate = new Date('2021-07-21T10:40:33.000Z') //NO
     this.firstDate = new Date('2021-07-21 12:11:07.000Z') //NO

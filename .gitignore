@@ -99,3 +99,4 @@ wp-content/themes/index.php
 # add your own entries here
 !wp-content/plugins/example-plugin/
 !robots.txt
+!.env.js.example 
