@@ -16,7 +16,7 @@ class parserWP {
   constructor () {
     this.limit = 30
     this.offset = 0
-    this.lastDate = new Date('2021-02-03T08:18:13.000Z') //DK
+    this.lastDate = new Date('2021-02-04T14:21:47.000Z') //DK
     // this.firstDate = new Date('2020-08-21T07:38:59.000Z') //DK
     // this.firstDate = new Date('2020-08-13T13:47:04.000Z') //DK
     this.firstDate = new Date('2007-09-15 12:11:07.000Z') //DK
@@ -148,28 +148,36 @@ class parserWP {
           [mainLang]: originalPost,
         }
         for (let lang of this.languages) {
-            await this.translatePost(originalPost, lang).then((data) => { // просто не нуждна такая скорость
+            await this.translatePost(originalPost, lang).then(async (data) => { // просто не нуждна такая скорость
               translates[lang] = data
               if (Object.keys(translates).length === this.languages.length + 1) {
-                // console.log(translates)
-
-                needle.post(this.insertUrl, translates, { json : true,  headers: { 'lang': mainLang } }, (err, res) => {
-                  if (err) {
-                    console.log(err, 'error Request Save', this.insertUrl)
-                    validationService(err)
-                    return
-                  }
-                  console.log(res.body, 'insertUrl res.body')
-                  if (res.body) {
-                    resolve()
-                  }
-                })
+                let result = false
+                while (result != true) {
+                  result = await this.savePost(translates)
+                }
+                resolve()
               }
             }).catch(err => {
               validationService(err)
               console.log('error post pars ID:', item.ID)
               reject('setPostLanguage')
             })
+        }
+      })
+    })
+  }
+  async savePost (translates) {
+    return new Promise((resolve, reject) => {
+      needle.post(this.insertUrl, translates, { json : true,  headers: { 'lang': mainLang } }, (err, res) => {
+        if (err) {
+          console.log(err, 'error Request Save', this.insertUrl)
+          validationService(err)
+          resolve(false)
+          return
+        }
+        console.log(res.body, 'insertUrl res.body')
+        if (res.body) {
+          resolve(true)
         }
       })
     })
