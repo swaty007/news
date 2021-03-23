@@ -196,6 +196,7 @@ class googleTranslate {
   async finish () {
     console.log(this.lang, ' Google Browser End ', this.totalRequest)
     await this.browser.close()
+    process.exit()
   }
 }
 
