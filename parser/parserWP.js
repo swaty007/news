@@ -16,7 +16,7 @@ class parserWP {
   constructor () {
     this.limit = 30
     this.offset = 0
-    this.lastDate = new Date('2021-03-16T09:44:43.000Z') //DK
+    this.lastDate = new Date('2021-03-23T11:15:22.000Z') //DK
     // this.firstDate = new Date('2020-08-21T07:38:59.000Z') //DK
     // this.firstDate = new Date('2020-08-13T13:47:04.000Z') //DK
     this.firstDate = new Date('2007-09-15 12:11:07.000Z') //DK
@@ -59,7 +59,7 @@ class parserWP {
     this.total = null
     connection = mysql.createConnection(miffNO),
       mainLang = 'nb'
-    this.lastDate = new Date('2021-07-23T18:40:33.000Z') //NO
+    this.lastDate = new Date('2021-07-21T10:40:33.000Z') //NO
     this.firstDate = new Date('2021-07-21 12:11:07.000Z') //NO
 
     connection.query(`SELECT count(*) as total FROM wp_posts WHERE post_type='post' AND post_status='publish'`,  (err, result) => {
