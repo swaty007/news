@@ -59,7 +59,7 @@ class parserWP {
     this.total = null
     connection = mysql.createConnection(miffNO),
       mainLang = 'nb'
-    this.lastDate = new Date('2021-07-21T10:40:33.000Z') //NO
+    this.lastDate = new Date('2021-07-23T18:40:33.000Z') //NO
     this.firstDate = new Date('2021-07-21 12:11:07.000Z') //NO
 
     connection.query(`SELECT count(*) as total FROM wp_posts WHERE post_type='post' AND post_status='publish'`,  (err, result) => {
