@@ -27,6 +27,7 @@ class parserWP {
       'ru',
       'en',
       'uk',
+      'zh',
     ]
     this.domainsParsed = 0
     this.totalRequest = {
@@ -51,6 +52,7 @@ class parserWP {
       this.googleru.finish()
       this.googleuk.finish()
       this.googleen.finish()
+      this.googlezh.finish()
       return
     }
     this.domainsParsed++
@@ -72,10 +74,12 @@ class parserWP {
     this.googleru = new googleTranslate()
     this.googleuk = new googleTranslate('uk')
     this.googleen = new googleTranslate('en')
+    this.googlezh = new googleTranslate('zh-CN')
    await Promise.all([
        this.googleru.init(),
        this.googleuk.init(),
        this.googleen.init(),
+       this.googlezh.init(),
     ])
     console.log('init google')
 

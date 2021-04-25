@@ -18,7 +18,8 @@ function parserRegisterRoute()
     ));
 }
 
-function uniqueTest($request) {
+function uniqueTest($request)
+{
     $json_parsed = $request->get_json_params();
 
     $imageurl = $json_parsed['image']['guid'];
@@ -38,7 +39,7 @@ function insertResult($request)
 {
     try {
         $json_parsed = $request->get_json_params();
-        $lang  = $request->get_header('lang');
+        $lang = $request->get_header('lang');
         if (empty($json_parsed)) {
             wp_send_json(false);
             return;
@@ -52,6 +53,7 @@ function insertResult($request)
             'ru' => [],
             'da' => [],
             'nb' => [],
+            'zh' => [],
         ];
         if (!empty($json_parsed['uk']['categories'])) {
             require_once(ABSPATH . '/wp-admin/includes/taxonomy.php');
@@ -67,6 +69,14 @@ function insertResult($request)
                     'category_parent' => pll_get_term(46, 'en'), //Denmark-46,  nb_NO NO - 3911
                 ]);
                 $category['en'][] = $catEn;
+
+                if (!empty($json_parsed['zh-CN'])) {
+                    $catZh = wp_insert_category([
+                        'cat_name' => $json_parsed['zh-CN']['categories'][$i],
+                        'category_parent' => pll_get_term(46, 'zh'), //Denmark-46,  nb_NO NO - 3911
+                    ]);
+                    $category['zh'][] = $catZh;
+                }
 
                 $catRu = wp_insert_category([
                     'cat_name' => $json_parsed['ru']['categories'][$i],
@@ -93,10 +103,11 @@ function insertResult($request)
                 $arrSave['uk'] = $catUk;
                 $arrSave['en'] = $catEn;
                 $arrSave['ru'] = $catRu;
-                if($catDa) {
+                $arrSave['zh'] = $catZh;
+                if ($catDa) {
                     $arrSave['da'] = $catDa;
                 }
-                if($catNb) {
+                if ($catNb) {
                     $arrSave['nb'] = $catNb;
                 }
                 pll_save_term_translations($arrSave);
@@ -110,7 +121,7 @@ function insertResult($request)
             set_post_thumbnail($post_id, $attach_id);
             pll_set_post_language($post_id, $lang);
 //            if ($lang !== 'da' || $lang !== 'nb') {
-                $posts[$lang] = $post_id;
+            $posts[$lang] = $post_id;
 //            } else {
 //                $main_post_id = $post_id;
 //            }
