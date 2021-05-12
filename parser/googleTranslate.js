@@ -171,7 +171,11 @@ class googleTranslate {
           await page.waitFor(1800)
           await page.evaluate((el, string) => el.value = string, input, string)
           await page.type('textarea', ' ', { delay: 10 })
-          await page.waitForResponse(response => response.url().startsWith('https://translate.google.ru/_/TranslateWebserverUi/data/batchexecute'))
+          await page.waitForResponse(response => response.url()
+              .startsWith('https://translate.google.ru/_/TranslateWebserverUi/data/batchexecute'))
+              .catch((e) => {
+                console.log('await response', e)
+              })
           await page.waitForSelector('.J0lOec', { visible: true })
           let elements = await page.$$('.JLqJ4b>span:first-child')
           await page.waitFor(2600)
