@@ -184,6 +184,9 @@ class googleTranslate {
             // console.log(text, 'MY SUPER TEXT')
             html += `${text} \n`
           }
+        if (html === '') {
+          throw new Error('Empty HTML')
+        }
           // await page.waitForTimeout(2200)
         }
 
