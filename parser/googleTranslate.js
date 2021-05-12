@@ -74,7 +74,7 @@ class googleTranslate {
         let step = 0
         while(text.length > step) {
           // await this.page.waitForTimeout(500)
-          await this.page.waitFor(500)
+          await this.page.waitFor(700)
           let slice = text.slice(step, maxLength)
           let last_index = slice.lastIndexOf('.')
           last_index = last_index > 0 ? last_index : step + maxLength
@@ -109,7 +109,7 @@ class googleTranslate {
         //   })
         // }
       } else {
-        await this.page.waitFor(300)
+        await this.page.waitFor(700)
         // await this.page.waitForTimeout(300)
         await this.translateString(text).then((res) => {
           result.push(res)
@@ -142,7 +142,7 @@ class googleTranslate {
       try {
         const page = this.page
         // await page.waitForNavigation({waitUntil: 'networkidle0'});
-        await page.waitFor(1300)
+        await page.waitFor(1600)
         // await page.waitForTimeout(1300)
         let input = await page.$('#source'),
           html = ''
@@ -157,7 +157,7 @@ class googleTranslate {
           // }
           // await page.type('#source', string, { delay: 0 })
           // await page.waitForTimeout(1500)
-          await page.waitFor(1500)
+          await page.waitFor(1800)
           await page.evaluate((el, string) => el.value = string, input, string)
           await page.waitForResponse(response => response.url().startsWith('https://translate.google.ru/translate_a/single'))
           await page.waitForSelector('.tlid-translation.translation', { visible: true })
@@ -168,13 +168,13 @@ class googleTranslate {
         } else {
           input = await page.$('textarea')
           await page.evaluate((el) => el.value = '', input)
-          await page.waitFor(1500)
+          await page.waitFor(1800)
           await page.evaluate((el, string) => el.value = string, input, string)
           await page.type('textarea', ' ', { delay: 10 })
           await page.waitForResponse(response => response.url().startsWith('https://translate.google.ru/_/TranslateWebserverUi/data/batchexecute'))
           await page.waitForSelector('.J0lOec', { visible: true })
           let elements = await page.$$('.JLqJ4b>span:first-child')
-          await page.waitFor(2200)
+          await page.waitFor(2600)
           for (let element of elements) {
             var text = await page.evaluate(el => el.innerHTML, element)
             // console.log(text, 'MY SUPER TEXT')
