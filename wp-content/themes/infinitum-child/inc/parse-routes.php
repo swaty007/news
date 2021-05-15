@@ -167,7 +167,8 @@ WHERE wp_posts.post_type='post' AND wp_posts.post_status='publish' LIMIT 2");
 
 
         $imageurl = $resultImage->guid;
-        $imagetype = end(explode('/', getimagesize($imageurl)['mime']));
+        $mime = explode('/', getimagesize($imageurl)['mime']);
+        $imagetype = end($mime);
 //        $uniq_name = date('dmY').''.(int) microtime(true);
         $filename = $resultImage->post_title . '.' . $imagetype;
         $uploaddir = wp_upload_dir();
