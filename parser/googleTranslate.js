@@ -74,7 +74,7 @@ class googleTranslate {
         let step = 0
         while(text.length > step) {
           // await this.page.waitForTimeout(500)
-          await this.page.waitFor(700)
+          await this.page.waitFor(400)
           let slice = text.slice(step, maxLength)
           let last_index = slice.lastIndexOf('.')
           last_index = last_index > 0 ? last_index : step + maxLength
@@ -109,7 +109,7 @@ class googleTranslate {
         //   })
         // }
       } else {
-        await this.page.waitFor(700)
+        await this.page.waitFor(400)
         // await this.page.waitForTimeout(300)
         await this.translateString(text).then((res) => {
           result.push(res)
@@ -142,7 +142,7 @@ class googleTranslate {
       try {
         const page = this.page
         // await page.waitForNavigation({waitUntil: 'networkidle0'});
-        await page.waitFor(1600)
+        await page.waitFor(1300)
         // await page.waitForTimeout(1300)
         let input = await page.$('#source'),
           html = ''
@@ -157,13 +157,13 @@ class googleTranslate {
           // }
           // await page.type('#source', string, { delay: 0 })
           // await page.waitForTimeout(1500)
-          await page.waitFor(1800)
+          await page.waitFor(1600)
           await page.evaluate((el, string) => el.value = string, input, string)
           await page.waitForResponse(response => response.url().startsWith('https://translate.google.ru/translate_a/single'))
           await page.waitForSelector('.tlid-translation.translation', { visible: true })
           let element = await page.$('.tlid-translation.translation')
           // await page.waitForTimeout(2200)
-          await page.waitFor(2200)
+          await page.waitFor(2000)
           html = await page.evaluate(el => el.innerHTML, element)
         } else {
           input = await page.$('textarea')
@@ -172,13 +172,18 @@ class googleTranslate {
           await page.evaluate((el, string) => el.value = string, input, string)
           await page.type('textarea', ' ', { delay: 10 })
           try {
-            await page.waitForResponse(response => response.url().startsWith('https://translate.google.ru/_/TranslateWebserverUi/data/batchexecute'))
+            await page.waitForResponse(response => response.url().startsWith('https://translate.google.ru/_/TranslateWebserverUi/') || response.url().startsWith('https://play.google.com/log?format=json&hasfast=true'))
+            // await page.waitForResponse(response => response.url().startsWith('https://translate.google.ru/_/TranslateWebserverUi/data/batchexecute'))
+            // await page.waitForResponse(response => response.url().startsWith('https://play.google.com/log?format=json&hasfast=true'))
+            // await page.waitForResponse(response => response.url().startsWith('https://translate.google.ru/_/TranslateWebserverUi/data/batchexecute?rpcids=jQ1olc&f.sid=6773751414465133470&bl=boq_translate-webserver_20210512.09_p0&hl=ru&soc-app=1&soc-platform=1&soc-device=1&_reqid=3301468&rt=c'))
+            // await page.waitForResponse(response => response.url().startsWith('https://translate.google.ru/_/TranslateWebserverUi/gen204/?tmambps=0.03731157007633892&rtembps=-1&rttms=16.33877395810509&ct=undefined'))
           } catch (e) {
             console.log('await response', e)
           }
+          await page.waitFor(100)
           await page.waitForSelector('.J0lOec', { visible: true })
           let elements = await page.$$('.JLqJ4b>span:first-child')
-          await page.waitFor(2600)
+          await page.waitFor(2400)
           for (let element of elements) {
             var text = await page.evaluate(el => el.innerHTML, element)
             // console.log(text, 'MY SUPER TEXT')
