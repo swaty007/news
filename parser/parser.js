@@ -2,17 +2,16 @@ import needle from 'needle'
 import { performance } from 'perf_hooks'
 import { googleTranslate } from './googleTranslate.js'
 import { Gazetapl } from './domains/gazetapl.js'
-import { validationService } from './helpers/helpers.js'
+import { fixHtmlText, validationService } from './helpers/helpers.js'
 import db from './models/index.js'
 
 class Parser {
   constructor () {
     this.insertUrl = 'https://news.infinitum.tech/wp-json/parse/v1/insert'
     this.uniqueUrl = 'https://news.infinitum.tech/wp-json/parse/v1/unique'
-    this.mainLang = 'pl'
     this.languages = [
+      'en', //must be first
       'uk',
-      'en',
       'ru',
       'zh',
       // 'pl',
@@ -36,25 +35,32 @@ class Parser {
     }
     await Promise.all(waitArray)
     console.log('init google')
+
     this.startLoop(Gazetapl)
   }
   async startLoop (emitter) {
-    this.em = new emitter(this.db).init()
+    this.em = new emitter(this.db).init(this)
     this.em.on('newPost', async (originalPost) => {
+      await this.newPost(originalPost)
+    })
+  }
+  async newPost (originalPost) {
+    try {
       await this.db.Post.create({
         url: originalPost.url,
         status: 1,
         html: JSON.stringify(originalPost),
       })
-      let translatedPostData = await this.setPostLanguage(originalPost)
-      // console.log('translatedPostData: ', translatedPostData)
+    } catch (e) {
+      console.log('Database Error Create: ', e)
+    }
+    let translatedPostData = await this.setPostLanguage(originalPost)
 
-      await this.savePost(translatedPostData).then(async () => {
-        await this.db.Post.update({ status: 5 }, {
-          where: {
-            url: originalPost.url,
-          },
-        })
+    await this.savePost(translatedPostData, originalPost.mainLang).then(async () => {
+      await this.db.Post.update({ status: 5 }, {
+        where: {
+          url: originalPost.url,
+        },
       })
     })
   }
@@ -67,7 +73,11 @@ class Parser {
         if (lang === originalPost.mainLang) {
           continue
         }
-        await this.translatePost(originalPost, lang).then(async (data) => { // просто не нуждна такая скорость
+        let postToTranslate = originalPost
+        if (translates['en']) {
+          postToTranslate = translates['en']
+        }
+        await this.translatePost(postToTranslate, lang).then(async (data) => { // просто не нуждна такая скорость
           translates[lang] = data
         }).catch(err => {
           validationService(err)
@@ -88,20 +98,21 @@ class Parser {
           // post_date_gmt: originalPost.post_date_gmt,
           image: originalPost.image,
           tags: await this['google_' + lang].translate(...originalPost.tags),
-          categories: await this['google_' + lang].translate(...originalPost.categories),
+          // TODO: check if more than 1 category
+          categories: [ await this['google_' + lang].translate(...originalPost.categories) ],
         }
         resolve(data)
       } catch (e) {
-        console.log('go miss post and try next, on translatePost')
+        console.error('go miss post and try next, on translatePost')
         reject()
       }
     })
   }
-  async savePost (translates) {
+  async savePost (translates, mainLang) {
     return new Promise((resolve, reject) => {
-      needle.post(this.insertUrl, translates, { json : true,  headers: { 'lang': this.mainLang } }, (err, res) => {
+      needle.post(this.insertUrl, translates, { json : true,  headers: { 'lang': mainLang } }, (err, res) => {
         if (err) {
-          console.log(err, 'error Request Save', this.insertUrl)
+          console.error(err, 'error Request Save', this.insertUrl)
           validationService(err)
           resolve(false)
           return

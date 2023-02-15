@@ -21,17 +21,28 @@ class Gazetapl extends abstractDomain {
         parseUrl: 'https://wiadomosci.gazeta.pl/wiadomosci/0,114881.html',
         category: ['Świat'],
       },
+      {
+        parseUrl: 'https://wiadomosci.gazeta.pl/wiadomosci/0,173952.html',
+        category: ['Koronawirus'],
+      },
+      {
+        parseUrl: 'https://wiadomosci.gazeta.pl/wiadomosci/0,156046.html',
+        category: ['Edukacja'],
+      },
     ]
     // this.parseUrl = 'https://fakty.tvn24.pl/fakty-o-swiecie,61'
   }
-  async init () {
+  init (cbFunction) {
+    this.parser = cbFunction
     this.startParse()
     return this.events
   }
   async startParse () {
     for (let entries of this.parseEntries) {
-      let article = await this.searchArticles(entries)
+      await this.searchArticles(entries)
     }
+    console.log('%c Finish Parse and restart parse! ', 'background: #fff; color: green;font-size: 55px')
+    this.startParse()
   }
   async searchArticles (entries) {
     return new Promise(async (resolve, reject) => {
@@ -82,8 +93,8 @@ class Gazetapl extends abstractDomain {
             tags,
             categories,
           }
-          this.events.emit('newPost', result)
-          return
+          // this.events.emit('newPost', result)
+          await this.parser.newPost(result)
         } catch (e) {
           console.error('searchArticles', e)
         }

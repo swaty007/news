@@ -10,7 +10,7 @@ class abstractDomain {
       needle.get(data.url, {},(err, res) => { // { agent: myAgent },
         // this.totalRequest.google += 1
         if (err) {
-          console.log(err, 'error Request', data.url)
+          console.error(err, 'error Request', data.url)
           return
         }
         resolve(this.parseHtml(res.body))
@@ -23,11 +23,15 @@ class abstractDomain {
     return $
   }
   async uniqueCheck (url) {
-    return await this.db.Post.findOne({
+    let post = await this.db.Post.findOne({
       where: {
         url: url,
       },
     })
+    if (post && post.status === 1) {
+      return false
+    }
+    return post
   }
 }
 

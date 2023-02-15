@@ -2,7 +2,7 @@
 import { stripHtml } from 'string-strip-html'
 
 function validationService (res) {
-  console.log('Error Makes :', res)
+  console.error('Error Makes :', res)
 }
 function fixHtmlText (text) {
   let html = stripHtml(text, {
@@ -26,6 +26,7 @@ function fixHtmlText (text) {
   .replace(/Gazeta.pl/ig, 'news.infinitum.tech')
   .replace(/(\s|^)miff(\s|$)/ig, ' Infinitum News ')
   .replace(/(\s|^)Gazeta.pl(\s|$)/ig, ' Infinitum News ')
+  .replace(/<span\b[^<]*>REKLAMA<\/span>/gm, '')
   // .replace(/<a\b[^>]*>(.*?)<\/a>/gm, '$1')
   // .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
   // .replace(/\[caption\b[^<]*(?:(?!<\/caption])<[^<]*)*\[\/caption]/gi, '')

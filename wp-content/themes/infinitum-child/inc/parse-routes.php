@@ -39,12 +39,12 @@ function insertResult($request)
 {
     try {
         $json_parsed = $request->get_json_params();
-        $lang = $request->get_header('lang');
+        $langMain = $request->get_header('lang');
         if (empty($json_parsed)) {
             wp_send_json(false);
             return;
         }
-        wp_send_json($lang);
+
         $attach_id = null;
         $main_post_id = null;
         $posts = [];
@@ -87,7 +87,7 @@ function insertResult($request)
             if (empty($attach_id)) {
                 $attach_id = !empty($item['image']['guid']) ? create_attachment($item['image']) : 315; //default
             }
-            $post_id = createPost($item, in_array($lang, ['pl']), $category[$lang]);
+            $post_id = createPost($item, in_array($lang, [$langMain]), $category[$lang]);
             set_post_thumbnail($post_id, $attach_id);
             pll_set_post_language($post_id, $lang);
 //            if ($lang !== 'da' || $lang !== 'nb') {
