@@ -17,7 +17,7 @@ class Parser {
       // 'pl',
 
       'da', //da_DK
-      // 'nb', // 'no', //nb_NO
+      'nb', // 'no', //nb_NO
     ]
     this.results = []
     this.totalRequest = {
@@ -52,16 +52,15 @@ class Parser {
         html: JSON.stringify(originalPost),
       })
     } catch (e) {
-      console.log('Database Error Create: ', e)
+      console.log('Database Error Create: ', e.message, e.errors)
     }
     let translatedPostData = await this.setPostLanguage(originalPost)
 
-    await this.savePost(translatedPostData, originalPost.mainLang).then(async () => {
-      await this.db.Post.update({ status: 5 }, {
-        where: {
-          url: originalPost.url,
-        },
-      })
+    await this.savePost(translatedPostData, originalPost.mainLang)
+    await this.db.Post.update({ status: 5 }, {
+      where: {
+        url: originalPost.url,
+      },
     })
   }
   async setPostLanguage (originalPost) {
@@ -81,7 +80,7 @@ class Parser {
           translates[lang] = data
         }).catch(err => {
           validationService(err)
-          console.log('error post pars:', originalPost)
+          console.log('error post pars:', postToTranslate)
           reject('setPostLanguage')
         })
       }
@@ -101,9 +100,12 @@ class Parser {
           // TODO: check if more than 1 category
           categories: [ await this['google_' + lang].translate(...originalPost.categories) ],
         }
+        if (!data.tags) {
+          data.tags = []
+        }
         resolve(data)
       } catch (e) {
-        console.error('go miss post and try next, on translatePost')
+        console.error('go miss post and try next, on translatePost', e)
         reject()
       }
     })

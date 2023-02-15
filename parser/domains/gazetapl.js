@@ -59,6 +59,9 @@ class Gazetapl extends abstractDomain {
         try {
           let $ = await this.requestGetPage({ url: page })
           let post_title = $('#article_wrapper #article_title').text().trim()
+          if(!post_title) {
+            post_title = $('.article .article__sidebar h1.article__title').text().trim()
+          }
           let post_excerpt = $('head meta[name="Description"]').attr('content')
           post_excerpt = post_excerpt ? post_excerpt.trim() : post_excerpt
           let post_content = $('section.art_content').html()

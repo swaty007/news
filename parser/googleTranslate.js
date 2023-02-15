@@ -16,13 +16,27 @@ export class googleTranslate {
       time: 0,
       requestGoogle: 0,
     }
-    this.lang = lang
+    this.translatorCache = {}
+    this.cacheStringLength = 50
+    this.langMapper = {
+      zh: 'zh-CN',
+      nb: 'no',
+    }
+    if(this.langMapper[lang]) {
+      this.lang = this.langMapper[lang]
+    } else {
+      this.lang = lang
+    }
   }
 
   async init () {
     return new Promise( (resolve, reject) => {
       puppeteer.launch({
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+        ],
         headless: false,
         executablePath: '/opt/homebrew/bin/chromium',
       }).then(async browser => {
@@ -60,13 +74,11 @@ export class googleTranslate {
     for (let text of texts) {
       text = fixHtmlText(text)
       if (text.length > maxLength) {
-        // console.log(text.length, 'MAX LENGTH')
         let ceil = Math.ceil(text.length / maxLength)
         let string = ''
 
         let step = 0
         while(text.length > step) {
-          // await this.page.waitForTimeout(500)
           await this.page.waitForTimeout(200)
           let slice = text.slice(step, maxLength)
           let last_index = slice.lastIndexOf('.')
@@ -120,6 +132,10 @@ export class googleTranslate {
     if (!string) {
       return 'Infinitum.tech'
     }
+    if(this.translatorCache[string]) {
+      console.log('get translate from cache', string, this.translatorCache[string])
+      return this.translatorCache[string]
+    }
     this.totalRequest.requestGoogle += 1
     return new Promise(async (resolve, reject) => {
       try {
@@ -167,7 +183,7 @@ export class googleTranslate {
           let elements = await page.$$('.ryNqvb')
           await page.waitForTimeout(2000)
           for (let element of elements) {
-            var text = await page.evaluate(el => el.innerHTML, element)
+            let text = await page.evaluate(el => el.innerHTML, element)
             // console.log(text, 'MY SUPER TEXT')
             html += `${text} \n`
           }
@@ -177,7 +193,12 @@ export class googleTranslate {
           // await page.waitForTimeout(2200)
         }
 
-        resolve(fixHtmlText(html))
+
+        let result = fixHtmlText(html)
+        if (string.length <= this.cacheStringLength) {
+          this.translatorCache[string] = result
+        }
+        resolve(result)
       } catch (e) {
         validationService(e)
         console.error('try to restart', e)
