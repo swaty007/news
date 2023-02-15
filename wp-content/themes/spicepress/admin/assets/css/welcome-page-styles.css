@@ -87,9 +87,9 @@
 }
 
 .spicepress-wrap .action-list .action {
-    background-color: #FFF;
+    background-color: #f0f0f1;
     padding: 20px;
-    margin-bottom: 20px;
+    margin: 20px;
 }
 
 .spicepress-wrap .action-list .action .action-title {

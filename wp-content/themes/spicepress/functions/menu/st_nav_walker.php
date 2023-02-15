@@ -1,6 +1,6 @@
 <?php
 /** nav-menu-walker.php */
-class Spicepress_nav_walker extends Walker_Nav_Menu {	
+class Spicepress_nav_walker extends Walker_Nav_Menu {
 	function start_lvl( &$output, $depth = 0, $args = array() ) {
 		$indent = str_repeat("\t", $depth);
 		$output .= "\n$indent<ul class=\"dropdown-menu\">\n";
@@ -25,16 +25,17 @@ class Spicepress_nav_walker extends Walker_Nav_Menu {
 		$attributes .= ! empty( $item->xfn )        ? ' rel="'    . esc_attr( $item->xfn        ) .'"' : '';
 		$attributes .= ! empty( $item->url )        ? ' href="'   . esc_attr( $item->url        ) .'"' : '';
 		//$attributes .= ($args->has_children) 	    ? ' data-toggle="dropdown" data-target="#" class="dropdown-toggle"' : '';
-			
+
 		$item_output = $args->before;
 		$item_output .= '<a'. $attributes .'>';
 		$item_output .= $args->link_before . apply_filters( 'the_title', $item->title, $item->ID ) . $args->link_after;
-		$item_output .= ($args->has_children) ? '</a>' : '</a>';
+//		$item_output .= ($args->has_children) ? '</a>' : '</a>';
+                $item_output .= ($args->has_children && $depth >=0) ? '<b class="caret"></b></a>' : '</a>';
 		$item_output .= $args->after;
 
 		$output .= apply_filters( 'walker_nav_menu_start_el', $item_output, $item, $depth, $args );
 	}
-	function display_element( $element, &$children_elements, $max_depth, $depth=0, $args, &$output ) {
+	function display_element( $element, &$children_elements, $max_depth, $depth, $args, &$output ) {
 
 		if ( !$element )
 			return;
@@ -44,8 +45,8 @@ class Spicepress_nav_walker extends Walker_Nav_Menu {
 		//display this element
 		if ( is_array( $args[0] ) )
 			$args[0]['has_children'] = ! empty( $children_elements[$element->$id_field] );
-		else if ( is_object( $args[0] ) ) 
-			$args[0]->has_children = ! empty( $children_elements[$element->$id_field] ); 
+		else if ( is_object( $args[0] ) )
+			$args[0]->has_children = ! empty( $children_elements[$element->$id_field] );
 		$cb_args = array_merge( array(&$output, $element, $depth), $args);
 		call_user_func_array(array($this, 'start_el'), $cb_args);
 
@@ -85,4 +86,3 @@ function spicepress_nav_menu_css_class( $classes ) {
 	return $classes;
 }
 add_filter( 'nav_menu_css_class', 'spicepress_nav_menu_css_class' );
-?>

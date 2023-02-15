@@ -27,25 +27,30 @@ get_header();
             	<div id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
                      <!-- mg-posts-sec mg-posts-modul-6 -->
                      <div class="mg-posts-sec mg-posts-modul-6  wd-back">
-			<?php if( have_posts()) :  the_post(); ?>		
-			<?php the_content(); ?>
-			<?php endif; 
-				while ( have_posts() ) : the_post();
-				// Include the page
-				the_content();
-				comments_template( '', true ); // show comments
-				wp_link_pages(array(
-        'before' => '<div class="link btn-theme">' . esc_html__('Pages:', 'newses'),
-        'after' => '</div>',
-    ));
-				
-				endwhile;
-				newses_page_edit_link();
-
-				if (comments_open() || get_comments_number()) :
-                  comments_template();
-                  endif;
-			?>	
+					<?php while (have_posts()) : the_post();
+	               if(has_post_thumbnail()) {
+					if ( is_single() ) { ?>
+						<figure class="post-thumbnail">
+							<?php the_post_thumbnail('full'); ?>					
+						</figure>
+					<?php }
+					else { ?>
+						<figure class="post-thumbnail">
+							<a href="<?php the_permalink(); ?>" >
+								<?php the_post_thumbnail('full'); ?>
+							</a>				
+						</figure>
+					<?php }
+					}		
+					the_content();
+					newses_page_edit_link();
+					
+	                if (comments_open() || get_comments_number()) :
+	                        comments_template();
+	                    endif;
+	                    
+	               endwhile;
+            	   ?>	
 					</div>
 				</div>
 			</div>

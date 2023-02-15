@@ -14,36 +14,34 @@ $newses_default = newses_get_default_theme_options();
  * @package newses
  */
 
- //Header Bqckground Overlay 
-   $wp_customize->add_setting(
-        'newses_header_overlay_color', array( 'sanitize_callback' => 'newses_alpha_color_custom_sanitization_callback',
-        
-    ) );
+//Header Bqckground Overlay 
+$wp_customize->add_setting(
+    'newses_header_overlay_color', array( 'sanitize_callback' => 'newses_alpha_color_custom_sanitization_callback',
     
-    $wp_customize->add_control(new Newses_Customize_Alpha_Color_Control( $wp_customize,'newses_header_overlay_color', array(
-       'label'      => __('Overlay Color', 'newses' ),
-        'palette' => true,
-        'section' => 'header_image')
-    ) );
+) );
+
+$wp_customize->add_control(new Newses_Customize_Alpha_Color_Control( $wp_customize,'newses_header_overlay_color', array(
+    'label'      => __('Overlay Color', 'newses' ),
+    'palette' => true,
+    'section' => 'header_image')
+) );
 
 $wp_customize->add_setting('remove_header_image_overlay',
-        array(
-            'default'           => $newses_default['remove_header_image_overlay'],
-            'capability'        => 'edit_theme_options',
-            'sanitize_callback' => 'newses_sanitize_checkbox',
-        )
-    );
+    array(
+        'default'           => $newses_default['remove_header_image_overlay'],
+        'capability'        => 'edit_theme_options',
+        'sanitize_callback' => 'newses_sanitize_checkbox',
+    )
+);
 
-    $wp_customize->add_control('remove_header_image_overlay',
-        array(
-            'label'    => esc_html__('Remove Image Overlay', 'newses'),
-            'section'  => 'header_image',
-            'type'     => 'checkbox',
-            'priority' => 50,
-        )
-    );
-
-
+$wp_customize->add_control('remove_header_image_overlay',
+    array(
+        'label'    => esc_html__('Remove Image Overlay', 'newses'),
+        'section'  => 'header_image',
+        'type'     => 'checkbox',
+        'priority' => 50,
+    )
+);
 // Add Frontpage Options Panel.
 $wp_customize->add_panel('frontpage_option_panel',
     array(
@@ -52,8 +50,6 @@ $wp_customize->add_panel('frontpage_option_panel',
         'capability' => 'edit_theme_options',
     )
 );
-
-
 // Advertisement Section.
 $wp_customize->add_section('frontpage_advertisement_settings',
     array(
@@ -63,10 +59,6 @@ $wp_customize->add_section('frontpage_advertisement_settings',
         'panel' => 'frontpage_option_panel',
     )
 );
-
-
-
-
 // Setting banner_advertisement_section.
 $wp_customize->add_setting('banner_advertisement_section',
     array(
@@ -76,10 +68,6 @@ $wp_customize->add_setting('banner_advertisement_section',
         'transport' => $selective_refresh
     )
 );
-
-
-
-
 $wp_customize->add_control(
     new WP_Customize_Cropped_Image_Control($wp_customize, 'banner_advertisement_section',
         array(
@@ -112,24 +100,20 @@ $wp_customize->add_control('banner_advertisement_section_url',
     )
 );
 
-$wp_customize->add_setting('newses_open_on_new_tab',
+$wp_customize->add_setting('banner_advertisement_open_on_new_tab',
+array(
+    'default' => $newses_default['banner_advertisement_open_on_new_tab'],
+    'sanitize_callback' => 'newses_sanitize_checkbox',
+)
+);
+$wp_customize->add_control(new Newses_Toggle_Control( $wp_customize, 'banner_advertisement_open_on_new_tab', 
     array(
-        'default' => true,
-        'sanitize_callback' => 'newses_sanitize_checkbox',
+        'label' => esc_html__('Open link in a new tab', 'newses'),
+        'type' => 'toggle',
+        'section' => 'frontpage_advertisement_settings',
+        'priority' => 140,
     )
-    );
-    $wp_customize->add_control(new Newses_Toggle_Control( $wp_customize, 'newses_open_on_new_tab', 
-        array(
-            'label' => esc_html__('Open link in a new tab', 'newses'),
-            'type' => 'toggle',
-            'section' => 'frontpage_advertisement_settings',
-            'priority' => 140,
-        )
-    ));
-
-
-
-
+));
 //=================================
 //Top tags Section.
 //=================================
@@ -292,7 +276,6 @@ $wp_customize->add_setting('trending_section_title',
         'sanitize_callback' => 'sanitize_text_field',
     )
 );
-
 $wp_customize->add_control(
     new Newses_Section_Title(
         $wp_customize,
@@ -327,6 +310,7 @@ $wp_customize->add_control('newses_select_trending_setting',
 
         ),
         'priority' => 50,
+        'active_callback' => 'newses_main_banner_section_status'
     ));
 
 

@@ -8,8 +8,6 @@ define('ST_THEME_FUNCTIONS_PATH',ST_TEMPLATE_DIR.'/functions');
 * helder function
 */
 require( ST_THEME_FUNCTIONS_PATH . '/custom-style/custom-css.php');
-
-
 // Theme functions file including
 require( ST_THEME_FUNCTIONS_PATH . '/scripts/script.php');
 require( ST_THEME_FUNCTIONS_PATH . '/menu/default_menu_walker.php');
@@ -27,6 +25,9 @@ require( ST_THEME_FUNCTIONS_PATH . '/customizer/customizer_import_data.php');
 require( ST_THEME_FUNCTIONS_PATH . '/customizer/customizer_bredcrumbs_settings.php');
 require( ST_THEME_FUNCTIONS_PATH . '/customizer/customizer-pro.php');
 require ( ST_THEME_FUNCTIONS_PATH . '/customizer/customizer_theme_style.php' );
+require ( ST_THEME_FUNCTIONS_PATH . '/customizer/customizer_color_back_settings.php' );
+require ( ST_THEME_FUNCTIONS_PATH . '/customizer/customizer_typography.php' );
+require ( ST_THEME_FUNCTIONS_PATH . '/customizer/customizer_blog_option_settings.php' );
 
 //Alpha Color Control
 require( ST_THEME_FUNCTIONS_PATH .'/customizer/customizer-alpha-color-picker/class-spicepress-customize-alpha-color-control.php');
@@ -55,10 +56,10 @@ if( !function_exists( 'spicepress_head_title' ) )
 				return $title;
 			
 		// Add the site name
-		$title .= get_bloginfo( 'name' );
+		$title .= esc_html(get_bloginfo( 'name' ));
 		
 		// Add the site description for the home / front page
-		$site_description = get_bloginfo( 'description' );
+		$site_description = esc_html(get_bloginfo( 'description' ));
 		if ( $site_description && ( is_home() || is_front_page() ) )
 				$title = "$title $sep $site_description";
 			
@@ -135,6 +136,9 @@ function spicepress_theme_setup() {
 	) );
 
 	add_editor_style();
+	
+	//Custom background
+	add_theme_support( 'custom-background');
 					
 	}
 endif; 
@@ -200,20 +204,40 @@ function spicepress_register_required_plugins() {
 	$plugins = array(
 		 // This is an example of how to include a plugin from the WordPress Plugin Repository.
 		array(
-            'name'      => 'Contact Form 7',
+            'name'      => esc_html__('Contact Form 7', 'spicepress'),
             'slug'      => 'contact-form-7',
             'required'  => false,
         ),
 		array(
-            'name'      => 'Instagram Feed',
+            'name'      => esc_html__('Instagram Feed','spicepress'),
             'slug' => 'instagram-feed',
             'required'  => false,
         ),
         array(
-            'name'      => 'Spice Box',
+            'name'      => esc_html__('Spice Box','spicepress'),
             'slug'      => 'spicebox',
             'required'  => false,
         ),
+        array(
+            'name'      => esc_html__('WooCommerce','spicepress'),
+            'slug'      => 'woocommerce',
+            'required'  => false,
+        ),
+        array(
+            'name'      => esc_html__('Spice Post Slider','spicepress'),
+            'slug'      => 'spice-post-slider',
+            'required'  => false,
+        ),
+        array(
+			'name'     => esc_html__('Spice Social Share', 'spicepress'),
+			'slug'     => 'spice-social-share',
+			'required'  => false,
+		),
+		array(
+            'name'     => esc_html__('Seo Optimized Images', 'spicepress'),
+            'slug'     => 'seo-optimized-images',
+            'required'  => false,
+            )
 	);
 
 	/*
@@ -248,3 +272,43 @@ if ( ! function_exists( 'wp_body_open' ) ) {
 		do_action( 'wp_body_open' );
 	}
 }
+add_action( 'admin_enqueue_scripts','spicpress_theme_style');
+function spicpress_theme_style(){?> 
+	<style type="text/css">
+		#customize-control-theme_color input[type=radio], #customize-control-spicepress_layout_style input[type=radio], #customize-control-theme_style_type input[type=radio], #customize-control-predefined_back_image input[type=radio] {
+		    display: none !important;
+		}
+		#customize-control-header_logo_placing #input_header_logo_placing{
+			float: left;
+		}
+	</style>
+<?php } 
+
+//Set for old user before 1.3.7
+if (!get_option('spicepress_user_with_1_9_1', false)) {
+    //detect old user and set value
+    $spicepress_service_title=get_theme_mod('home_service_section_title');
+    $spicepress_service_discription=get_theme_mod('home_service_section_discription');
+    $spicepress_blog_title=get_theme_mod('home_news_section_title');
+    $spicepress_blog_discription=get_theme_mod('home_news_section_discription');
+    $spicepress_slider_title=get_theme_mod('home_slider_title');
+    $spicepress_slider_discription=get_theme_mod('home_slider_discription'); 
+    $spicepress_testimonial_title=get_theme_mod('home_testimonial_section_title'); 
+    $spicepress_testimonial__discription=get_theme_mod('home_testimonial_section_discription');
+    $spicepress_footer_credit=get_theme_mod('footer_copyright_text');
+
+    if ($spicepress_service_title !=null || $spicepress_service_discription !=null || $spicepress_blog_title !=null || $spicepress_blog_discription !=null || $spicepress_slider_title !=null || $spicepress_slider_discription !=null || $spicepress_testimonial_title !=null || $spicepress_testimonial__discription !=null || $spicepress_footer_credit !=null )  {
+        add_option('spicepress_user_with_1_9_1', 'old');
+
+    } else {
+        add_option('spicepress_user_with_1_9_1', 'new');
+    }
+}
+
+//Remove Footer section
+function spicepress_remove_customize_register( $wp_customize ) {
+
+   $wp_customize->remove_section( 'spicepress_footer_copyright');
+
+}
+add_action( 'customize_register', 'spicepress_remove_customize_register',11);

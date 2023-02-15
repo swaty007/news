@@ -2,6 +2,8 @@
 
 	wp_enqueue_style('bootstrap', get_template_directory_uri() . '/css/bootstrap.css');
 
+	wp_style_add_data('bootstrap', 'rtl', 'replace' );
+
 	wp_enqueue_style('newses-style', get_stylesheet_uri() );
 
 	wp_style_add_data('newses-style', 'rtl', 'replace' );

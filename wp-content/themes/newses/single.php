@@ -23,22 +23,23 @@
                 </div>
                 <?php } ?>
                   <h1 class="title"><?php the_title(); ?></h1>
+                  <?php
+                  $newses_single_post_admin_details = esc_attr(get_theme_mod('newses_single_post_admin_details','true'));
+                  $newses_single_post_date = esc_attr(get_theme_mod('newses_single_post_date','true'));
+                  $newses_single_post_tag = esc_attr(get_theme_mod('newses_single_post_tag','true'));
+                   if (($newses_single_post_admin_details == true) || ($newses_single_post_date == true) || ($newses_single_post_tag == true)) { ?>
               <div class="media mg-info-author-block"> 
-                  <?php $newses_single_post_admin_details = esc_attr(get_theme_mod('newses_single_post_admin_details','true'));
-                  if($newses_single_post_admin_details == true){ ?>
+                  <?php if($newses_single_post_admin_details == true){ ?>
                    <a class="mg-author-pic" href="<?php echo esc_url(get_author_posts_url( get_the_author_meta( 'ID' ) ));?>"> <?php echo get_avatar( get_the_author_meta( 'ID') , 150); ?> </a>
                 <?php } ?>
                   <div class="media-body">
-                    <?php $newses_single_post_admin_details = esc_attr(get_theme_mod('newses_single_post_admin_details','true'));
-                  if($newses_single_post_admin_details == true){ ?>
+                    <?php if($newses_single_post_admin_details == true){ ?>
                     <h4 class="media-heading"><span><?php esc_html_e('By','newses'); ?></span><a href="<?php echo esc_url(get_author_posts_url( get_the_author_meta( 'ID' ) ));?>"><?php the_author(); ?></a></h4>
                     <?php } ?>
-                    <?php $newses_single_post_date = esc_attr(get_theme_mod('newses_single_post_date','true'));
-                    if($newses_single_post_date == true){ ?>
+                    <?php if($newses_single_post_date == true){ ?>
                     <span class="mg-blog-date"><i class="fa fa-clock-o"></i> 
                       <?php echo get_the_date('M'); ?> <?php echo get_the_date('j,'); ?> <?php echo get_the_date('Y'); ?></span>
                     <?php }
-                    $newses_single_post_tag = esc_attr(get_theme_mod('newses_single_post_tag','true'));
                     if($newses_single_post_tag == true){
                     $tag_list = get_the_tag_list();
                     if($tag_list){ ?>
@@ -48,7 +49,7 @@
                   <?php } } ?>
                   </div>
                 </div>
-              <?php } } ?>
+              <?php } } } ?>
             </div>
         </div>
         <!--col-md-->
@@ -87,9 +88,11 @@
                 ?>
                 <div class="clearfix mb-3"></div>
                 <?php
+                $prev =  (is_rtl()) ? "left" : "right";
+                $next =  (is_rtl()) ? "right" : "left";
             the_post_navigation(array(
-                'prev_text' => '%title <div class="fa fa-angle-double-right"></div><span></span>',
-                'next_text' => '<div class="fa fa-angle-double-left"></div><span></span> %title',
+                'prev_text' => '%title <div class="fa fa-angle-double-'.$prev.'"></div><span></span>',
+                'next_text' => '<div class="fa fa-angle-double-'.$next.'"></div><span></span> %title',
                 'in_same_term' => true,
             ));
             ?>
@@ -170,8 +173,8 @@
                                             ?>
                                               <a href="<?php echo esc_url(get_month_link(get_post_time('Y'),get_post_time('m'))); ?>">
          									<?php echo esc_html(get_the_date('M j, Y')); ?></a></span>
-                                            <?php } $newses_enable_single_post_admin = esc_attr(get_theme_mod('newses_enable_single_post_admin','true'));
-                                              if($newses_enable_single_post_admin == true) {?>
+                                            <?php } $newses_enable_single_post_author = esc_attr(get_theme_mod('newses_enable_single_post_author','true'));
+                                              if($newses_enable_single_post_author == true) {?>
                                             <a href="<?php echo esc_url(get_author_posts_url( get_the_author_meta( 'ID' ) ));?>"> <i class="fa fa-user-circle-o"></i> <?php the_author(); ?></a>
                                             <?php } ?> 
                                             <?php edit_post_link( __( 'Edit', 'newses' ), '<span class="post-edit-link"><i class="fa fa-edit"></i>', '</span>' ); ?>

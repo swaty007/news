@@ -111,13 +111,17 @@ a.msearch{
 a.msearch:hover,a.msearch:focus{
 	color: #C70909;
 }
-
+.wp-block-search__input{
+    border-color: #eef3fb;
+}
+.wp-block-search__input:hover, .wp-block-search__input:focus {
+    border-color: #C70909;
+}
 .wp-block-search .wp-block-search__button {
     background: #C70909;
     border-color: #C70909;
     color: #fff;
 }
-
 /*=== navbar drop down hover color ===*/
 .navbar-base .navbar-nav > .open > a, .navbar-base .navbar-nav > .open > a:hover, .navbar-base .navbar-nav > .open > a:focus {
 	color: #fff;
@@ -373,19 +377,19 @@ blockquote::before {
     color: #fff;
 }
 .mg-blog-meta {
-    color: #02071b;
+    color: #333;
 }
 .mg-blog-meta a {
-	color: #02071b;
+	color: #333;
+}
+.mg-blog-meta i {
+	color: #333;
+}
+.mg-blog-date {
+	color: #333;
 }
 .mg-blog-meta a:hover {
 	color: #C70909;
-}
-.mg-blog-meta i {
-	color: #7B8697;
-}
-.mg-blog-date {
-	color: #868686;
 }
 .mg-blog-post.lg .mg-blog-meta i, .mg-blog-post.lg .mg-blog-meta a , .mg-blog-post.lg .mg-blog-meta span {
 	color: #fff;
@@ -529,6 +533,14 @@ blockquote::before {
 .mg-sidebar .mg-left-menu-widget ul li a {
 	color: #212121;
 }
+
+.mg-widget h2, .wp-block-search__label {
+	background: #C70909;
+	color: #fff;
+}
+.mg-widget h2::after, .wp-block-search__label::after {
+	background: #0000000d;
+}
 /*==================== general ====================*/
 h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6 {
 	color: #212121;
@@ -610,6 +622,9 @@ h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6 {
 .mg-page-breadcrumb > li + li:before {
 	color: #222;
 }
+.mg-page-breadcrumb > li + li::after {
+	color: #222;
+}
 /*==================== blog ====================*/
 .mg-comments .mg-reply:hover, .mg-comments .mg-reply:focus {
 	color: #fff;
@@ -667,6 +682,18 @@ footer .mg-widget .calendar_wrap table thead th,footer .mg-widget .calendar_wrap
 footer .mg-social li span.icon-soci a {
     color: #fff;
 }
+
+.mg-footer-widget-area .wp-block-tag-cloud a:hover
+{
+	background: #fff;
+	color: #000;
+}
+
+body .site-title-footer a, body .site-description-footer {
+    color: #fff;
+}
+.mg-footer-widget-area .mg-widget h2, .mg-footer-widget-area .wp-block-search__label{color: #fff;}
+
 .facebook{
 	background: #3b5998;
 } 
@@ -895,4 +922,11 @@ div.wpforms-container-full .wpforms-form button[type=submit], div.wpforms-contai
 {
     background-color: #C70909;
     color: #fff;
+}
+.wd-back{
+	background-color: #fff;
+}
+.mg-sidebar .mg-widget {
+    border-color: #eee;
+    background: #fff;
 }

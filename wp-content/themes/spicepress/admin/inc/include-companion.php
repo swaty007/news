@@ -5,8 +5,8 @@
  *
  */
 
-$hide_install = get_option('spicepress_hide_customizer_companion_notice', false);
-if (!function_exists('spicethemes_companion') && !$hide_install) {
+$spicepress_hide_install = get_option('spicepress_hide_customizer_companion_notice', false);
+if (!function_exists('spicethemes_companion') && !$spicepress_hide_install) {
 	if (class_exists('WP_Customize_Section') && !class_exists('Spicepress_Companion_Installer_Section')) {
 		/**
 		 *

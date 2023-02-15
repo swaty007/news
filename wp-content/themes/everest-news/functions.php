@@ -14,6 +14,7 @@ $everest_news_theme = wp_get_theme( 'everest-news' );
 define( 'EVEREST_NEWS_VERSION', $everest_news_theme->get( 'Version' ) );
 
 require get_template_directory() . '/inc/class-everest-news.php';
+require get_template_directory() . '/inc/notice/ebwp-notice.php';
 
 
 function everest_news_run() {

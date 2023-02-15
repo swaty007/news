@@ -39,13 +39,11 @@ if (!class_exists('SpicePress_About_Page')) {
 			add_action('load-themes.php', array($this, 'activation_admin_notice'));
 			/* enqueue script and style for welcome screen */
 			add_action( 'admin_enqueue_scripts', array( $this, 'style_and_scripts' ) );
-			
+
 			/* load welcome screen */
 			add_action( 'spicepress_info_screen', array( $this, 'getting_started' ),10 );
 			add_action( 'spicepress_info_screen', array( $this, 'github' ),40 );
-			add_action( 'spicepress_info_screen', array( $this, 'welcome_free_pro' ),50 );
 			add_action( 'spicepress_info_screen', array( $this, 'recommended_actions' ),50 );
-			add_action( 'spicepress_info_screen', array( $this, 'changelog' ),60 );
 			}
 
 		/**
@@ -55,14 +53,14 @@ if (!class_exists('SpicePress_About_Page')) {
 	public function style_and_scripts( $hook_suffix ) {
 
 		if ( 'appearance_page_spicepress-welcome' == $hook_suffix ) {
-			
-			
+
+
 			wp_enqueue_style( 'spicepress-info-screen-css', ST_TEMPLATE_DIR_URI . '/admin/assets/css/welcome.css' );
-			
+
 			wp_enqueue_style( 'spicepress-info-css', ST_TEMPLATE_DIR_URI . '/css/bootstrap.css' );
-			
+
 			wp_enqueue_style('spicepress-theme-info-style', ST_TEMPLATE_DIR_URI . '/admin/assets/css/welcome-page-styles.css');
-			
+
 			wp_enqueue_style('spicepress-welcome_customizer', ST_TEMPLATE_DIR_URI . '/admin/assets/css/welcome_customizer.css');
 			wp_enqueue_script('plugin-install');
 			wp_enqueue_script('updates');
@@ -114,8 +112,8 @@ if (!class_exists('SpicePress_About_Page')) {
 			'themeinfo' => esc_html__('View Theme Info','spicepress'),
 		) );
 	}
-		
-		
+
+
 
 		public function add_theme_info_menu() {
 			$theme = $this->theme;
@@ -165,7 +163,7 @@ if (!class_exists('SpicePress_About_Page')) {
 								$active_class = '';
 								$count        = '';
 								if ($active_tab == $tab['link']) {
-									
+
 									$tab_file_path = $tab['file_path'];
 								}
 
@@ -173,24 +171,24 @@ if (!class_exists('SpicePress_About_Page')) {
 									$count = $this->action_count;
 									$count = ($count > 0) ? '<span class="badge-action-count">' . $count . '</span>' : '';
 								}
-                             
-	
+
+
 								$tabs_head .= sprintf('<li role="presentation"><a href="%s" class="nav-tab %s" role="tab" data-toggle="tab">%s</a></li>', esc_url(('#' . $tab['link'])), $active_class, $tab['name'] . $count);
-								                    
+
 							}
-							
+
 						?>
-		
+
 						 <ul class="spicepress-nav-tabs" role="tablist">
 							<?php echo wp_kses_post($tabs_head); ?>
 						 </ul>
-						 
+
 						 	<div class="spicepress-tab-content">
 
 			<?php do_action( 'spicepress_info_screen' ); ?>
 
 		</div>
-						
+
 						 <div class="tab-content <?php echo esc_attr($active_tab); ?>">
 						 	<?php
 								if (!empty($tab_file_path) && file_exists($tab_file_path)) {
@@ -202,10 +200,10 @@ if (!class_exists('SpicePress_About_Page')) {
 					</div>
 				</div>
 			</div></div></div></div>
-		
+
 			<?php
 		}
-		
+
 		public function getting_started() {
 		require_once( ST_TEMPLATE_DIR . '/admin/tab-pages/getting-started.php' );
 	}
@@ -220,88 +218,18 @@ if (!class_exists('SpicePress_About_Page')) {
 
 
 	/**
-	 * Free vs PRO
-	 * 
-	 */
-	public function welcome_free_pro() {
-		require_once( ST_TEMPLATE_DIR . '/admin/tab-pages/free_vs_pro.php' );
-	}
-	
-	
-	/**
 	 * Recommended Action
-	 * 
+	 *
 	 */
 	public function recommended_actions() {
 		require_once( ST_TEMPLATE_DIR . '/admin/tab-pages/recommended_actions.php' );
 	}
-	
-	
-	
-	/**
-		 * Output the changelog screen.
-		 */
-		public function changelog() {
-			global $wp_filesystem;
 
-			?>
-			<div id="changelog" class="spicepress-tab-pane panel-close">
-			<div class="wrap about-wrap">
-
-				<?php //$this->intro(); ?>
-
-				<p class="about-description"><?php esc_html_e( 'See changelog below:', 'spicepress' ); ?></p>
-
-				<?php
-				$changelog_file = apply_filters( 'changelog_file', ST_TEMPLATE_DIR . '/changelog.txt' );
-
-				// Check if the changelog file exists and is readable.
-				if ( $changelog_file && is_readable( $changelog_file ) ) {
-					WP_Filesystem();
-					$changelog      = $wp_filesystem->get_contents( $changelog_file );
-					$changelog_list = $this->parse_changelog( $changelog );
-
-					echo wp_kses_post( $changelog_list );
-				}
-				?>
-			</div>
-			</div>
-			<?php
-		}
-
-		/**
-		 * Parse changelog from readme file.
-		 *
-		 * @param  string $content
-		 *
-		 * @return string
-		 */
-		private function parse_changelog( $content ) {
-			$matches   = null;
-			$regexp    = '~==\s*Changelog\s*==(.*)($)~Uis';
-			$changelog = '';
-
-			if ( preg_match( $regexp, $content, $matches ) ) {
-				$changes = explode( '\r\n', trim( $matches[1] ) );
-
-				$changelog .= '<pre class="changelog">';
-
-				foreach ( $changes as $index => $line ) {
-					$changelog .= wp_kses_post( preg_replace( '~(=\s*Version\s*(\d+(?:\.\d+)+)\s*=|$)~Uis', '<span class="title">${1}</span>', $line ) );
-				}
-
-				$changelog .= '</pre>';
-			}
-
-			return wp_kses_post( $changelog );
-		}
-	
-	
 
 		public function get_tabs_array() {
 			$tabs_array = array();
-			
-			
+
+
 			$tabs_array[]	= array(
 					'link'      => 'getting_started',
 					'name'      => esc_html__('Getting Started', 'spicepress'),
@@ -321,24 +249,13 @@ if (!class_exists('SpicePress_About_Page')) {
 						'file_path' => ST_TEMPLATE_DIR . '/admin/tab-pages/useful_plugins.php',
 				);
 			}
-			
-			$tabs_array[]	= 	array(
-					'link'      => 'changelog',
-					'name'      => esc_html__('Changelog', 'spicepress')
-			);
-			
-			$tabs_array[]	= 	array(
-					'link'      => 'free_vs_pro',
-					'name'      => esc_html__('Free vs. PRO', 'spicepress'),
-					'file_path' => ST_TEMPLATE_DIR . '/admin/tab-pages/free-vs-pro.php',
-			);
-			
+
 			return $tabs_array;
-			
+
 		}
 
 		public function get_recommended_plugins() {
-			
+
 			$plugins = apply_filters('spicepress_recommended_plugins', array());
 			return $plugins;
 		}
@@ -352,7 +269,7 @@ if (!class_exists('SpicePress_About_Page')) {
 
 			$act_count           = 0;
 			$actions_todo = get_option( 'recommended_actions', array());
-			
+
 			$plugins = $this->get_recommended_plugins();
 
 			if ($plugins) {
@@ -373,7 +290,7 @@ if (!class_exists('SpicePress_About_Page')) {
 						$action['title'] = $plugin['name'];
 					}
 
-					$link_and_is_done  = $this->get_plugin_buttion($plugin['slug'], $plugin['name']);
+					$link_and_is_done  = $this->get_plugin_buttion($plugin['slug'], $plugin['name'], $plugin['function'], $plugin['class']);
 					$action['link']    = $link_and_is_done['button'];
 					$action['is_done'] = $link_and_is_done['done'];
 					if (!$action['is_done'] && (!isset($actions_todo[$action['id']]) || !$actions_todo[$action['id']])) {
@@ -387,12 +304,17 @@ if (!class_exists('SpicePress_About_Page')) {
 
 		}
 
-		public function get_plugin_buttion($slug, $name) {
+		public function get_plugin_buttion($slug, $name, $function, $class) {
 			$is_done      = false;
 			$button_html  = '';
 			$is_installed = $this->is_plugin_installed($slug);
 			$plugin_path  = $this->get_plugin_basename_from_slug($slug);
-			$is_activeted = $this->chk_plg($name);
+			if($class==''):
+				$is_activeted = (function_exists($function)) ? true : false;
+			else:
+				$is_activeted = (class_exists($class)) ? true : false;
+			endif;
+			
 			if (!$is_installed) {
 				$plugin_install_url = add_query_arg(
 					array(
@@ -436,17 +358,7 @@ if (!class_exists('SpicePress_About_Page')) {
 			return array('done' => $is_done, 'button' => $button_html);
 		}
 
-		public function chk_plg($name)
-		{
-			if (  function_exists( 'spiceb_activate' ) && ($name=='SpiceBox'))
-			{
-				return true;
-			}
-			if( class_exists('WPCF7') && ($name=='Contact Form 7'))
-			{
-				return true;
-			}
-		}
+		
 
 		public function get_plugin_basename_from_slug($slug) {
 			$keys = array_keys($this->get_installed_plugins());
@@ -550,19 +462,49 @@ function spicepress_useful_plugins_array($plugins){
 add_filter('spicepress_useful_plugins', 'spicepress_useful_plugins_array');
 
 function spicepress_recommended_plugins_array($plugins){
-	
+
+		 	$plugins[] = array(
+			'name'     => esc_html__('Spice Box', 'spicepress' ),
+			'slug'     => 'spicebox',
+			'function' => 'spiceb_activate',
+			'class'    => '',
+			'desc'     => esc_html__('To access the advanced Frontpage sections and the other features, please install & activate the Spice Box plugin.', 'spicepress' ),
+		);
+			$plugins[] = array(
+			'name'     => esc_html__('Contact Form 7', 'spicepress' ),
+			'slug'     => 'contact-form-7',
+			'function' => '',
+			'class'    => 'WPCF7',
+			'desc'     => esc_html__('To display the contact form, please install & activate the Contact Form 7 plugin.', 'spicepress' ),
+		);
+			 $plugins[] = array(
+	        'name' => esc_html__('WooCommerce', 'spicepress'),
+	        'slug' => 'woocommerce',
+	        'function' => '',
+			'class'    => 'woocommerce',
+	        'desc' => esc_html__('To create a shop page you just need to install this plugin & activate it.', 'spicepress'),
+	    );
 		$plugins[] = array(
-						'name'     => esc_html__('SpiceBox', 'spicepress'),
-						'slug'     => 'spicebox',
-						'desc'     => esc_html__('To access the advance Frontpage sections and other theme features, please install the SpiceBox plugin.', 'spicepress'),
-					);
-				
+			'name'     => esc_html__('Spice Post Slider', 'spicepress'),
+			'slug'     => 'spice-post-slider',
+			'function' => '',
+			'class'    => 'Spice_Post_Slider',
+			'desc'     => esc_html__('To display the posts in beautiful slider with multiple options you just need to install & activate this plugin.', 'spicepress'),
+		);
 		$plugins[] = array(
-					'name'     => esc_html__('Contact Form 7', 'spicepress'),
-					'slug'     => 'contact-form-7',
-					'desc'     => esc_html__('To display the contact form on the contact section in homepage, please install the Contact Form 7 plugin', 'spicepress'),
-				);
-	
+		    'name'     => esc_html__('Spice Social Share', 'spicepress'),
+		    'slug'     => 'spice-social-share',
+		    'function' => '',
+			'class'    => 'Spice_Social_Share',
+		    'desc'     => esc_html__('To add social share buttons to your posts you just need to install & activate this plugin.', 'spicepress'),
+		); 
+		$plugins[] = array(
+			'name'     => esc_html__('Seo Optimized Images', 'spicepress'),
+            'slug'     => 'seo-optimized-images',
+            'function' => 'sobw_fs',
+			'class'    => '',
+            'desc'     => esc_html__('It is recommended that you install & activate the Seo Optimized Images plugin to dynamically insert SEO Friendly alt attributes and title attributes to your Images.', 'spicepress'),
+		);	
 	return $plugins;
 }
 add_filter('spicepress_recommended_plugins', 'spicepress_recommended_plugins_array');

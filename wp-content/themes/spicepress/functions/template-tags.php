@@ -2,8 +2,7 @@
 if ( ! function_exists( 'spicepress_blog_meta_content' ) ) :
 function spicepress_blog_meta_content()
 { 
-	$spicepress_blog_meta_section_enable = get_theme_mod('blog_meta_section_enable',true);
-	
+	$spicepress_blog_meta_section_enable = get_theme_mod('blog_meta_section_enable',true);	
 	if( $spicepress_blog_meta_section_enable == true ) { ?>
 	<div class="entry-meta">
 		<span class="entry-date">
@@ -29,7 +28,7 @@ function spicepress_blog_category_content()
 	<?php 	
 	$spicepress_cat_list = get_the_category_list();
 		if(!empty($spicepress_cat_list)) { ?>
-	<span class="cat-links"><?php esc_html_e('in','spicepress');?><?php the_category(', '); ?></span>
+	<span class="cat-links"><?php esc_html_e('in','spicepress');?>&nbsp;<?php the_category(', '); ?></span>
 	<?php } 
 	    $spicepress_tag_list = get_the_tag_list();
 		if(!empty($spicepress_tag_list)) { ?>
@@ -37,6 +36,104 @@ function spicepress_blog_category_content()
 				<?php } ?>
 
 </div>	 
+<?php } } endif;
+
+//Blog Content
+if ( ! function_exists( 'spicepress_posted_content' ) ) :
+    function spicepress_posted_content() { 
+      $spicepress_blog_content  = get_theme_mod('spicepress_blog_content','excerpt');
+      $spicepress_excerpt_length  = get_theme_mod('spicepress_blog_content_length',30);
+
+      if ( 'excerpt' == $spicepress_blog_content ){
+      $spicepress_excerpt = spicepress_the_excerpt( absint( $spicepress_excerpt_length ) );
+      if ( !empty( $spicepress_excerpt ) ) :                   
+          echo wp_kses_post( wpautop( $spicepress_excerpt ) );
+           endif; 
+      } else{ 
+       the_content( __('Read More','spicepress') );
+        }
+ }
+endif;
+
+if ( ! function_exists( 'spicepress_the_excerpt' ) ) :
+
+    /**
+     * Generate excerpt.
+     *
+     */
+    function spicepress_the_excerpt( $length = 0, $post_obj = null ) {
+
+        global $post;
+
+        if ( is_null( $post_obj ) ) {
+            $post_obj = $post;
+        }
+
+        $length = absint( $length );
+
+        if ( 0 === $length ) {
+            return;
+        }
+
+        $source_content = $post_obj->post_content;
+
+        if ( ! empty( $post_obj->post_excerpt ) ) {
+            $source_content = $post_obj->post_excerpt;
+        }
+
+        $source_content = preg_replace( '`\[[^\]]*\]`', '', $source_content );
+        $trimmed_content = wp_trim_words( $source_content, $length, '&hellip;' );
+        return $trimmed_content;
+
+    }
+endif;
+//Single post meta content
+if ( ! function_exists( 'spicepres_single_post_meta_content' ) ) :
+
+function spicepres_single_post_meta_content(){	
+	$spicepress_blog_meta_section_enable = get_theme_mod('blog_meta_section_enable',true);	
+	if( $spicepress_blog_meta_section_enable == true ) { 
+		if(get_theme_mod('spicepress_enable_single_post_date',true)==true):?>
+			<div class="entry-meta">
+				<span class="entry-date">
+					<a href="<?php echo esc_url(get_month_link(esc_html(get_post_time('Y')),esc_html(get_post_time('m')))); ?>"><time datetime=""><?php echo esc_html(get_the_date()); ?></time></a>
+				</span>
+			</div>
+		<?php 
+		endif;
+	} 
+}
+endif;
+
+//Single post Category
+if ( ! function_exists( 'spicepress_single_post_category_content' ) ) :
+
+function spicepress_single_post_category_content()
+{		
+	if( get_theme_mod('spicepress_enable_single_post_admin',true)== true || get_theme_mod('spicepress_enable_single_post_category',true)==true || get_theme_mod('spicepress_enable_single_post_tag',true)==true ) {?>
+		<div class="entry-meta">
+
+			<?php if(get_theme_mod('spicepress_enable_single_post_admin',true)==true):?>
+				<span class="author"><?php esc_html_e('By','spicepress');?> <a rel="tag" href="<?php echo esc_url(get_author_posts_url( get_the_author_meta( 'ID' ) ));?>"><?php echo esc_html(get_the_author());?></a>		
+				</span>
+			<?php 
+			endif;
+
+			if(get_theme_mod('spicepress_enable_single_post_category',true)==true):	
+				$spicepress_cat_list = get_the_category_list();
+				if(!empty($spicepress_cat_list)) { ?>
+					<span class="cat-links"><?php esc_html_e('in','spicepress');?>&nbsp;<?php the_category(', '); ?></span>
+				<?php } 
+			endif;
+
+			if(get_theme_mod('spicepress_enable_single_post_tag',true)==true):	
+				$spicepress_tag_list = get_the_tag_list();
+				if(!empty($spicepress_tag_list)) { ?>
+						<span class="tag-links"><?php esc_html_e('Tag','spicepress');?> <?php the_tags('', ', ', ''); ?></span>
+				<?php } 
+			endif;?>
+
+		</div>	 
 <?php } } endif;
 // avator class
 function spicepress_gravatar_class($class) {
@@ -67,9 +164,7 @@ function spicepress_author_meta()
 				<?php $spicepress_twitter_profile = get_the_author_meta( 'twitter_profile' ); if ( $spicepress_twitter_profile && $spicepress_twitter_profile != '' ): ?>
 				<li class="twitter"><a href="<?php echo esc_url($spicepress_twitter_profile); ?>"><i class="fa fa-twitter"></i></a></li>
 				<?php endif; ?>
-				<?php $spicepress_google_profile = get_the_author_meta( 'google_profile' ); if ( $spicepress_google_profile && $spicepress_google_profile != '' ): ?>
-				<li class="googleplus"><a href="<?php echo esc_url($spicepress_google_profile); ?>"><i class="fa fa-google-plus"></i></a></li>
-				<?php endif; ?>
+				
 		   </ul>
 		</div>
 	</div>	
@@ -201,8 +296,8 @@ endif;
 add_action('wp_head','spicepress_custom_menu_breakpoint');
 function spicepress_custom_menu_breakpoint() {
 	
-$spicepress_menu_breakpoint = get_theme_mod('menu_breakpoint', 1100);
- $link_color = get_theme_mod('link_color');
+$spicepress_menu_breakpoint = esc_html(get_theme_mod('menu_breakpoint', 1100));
+ $link_color = esc_attr(get_theme_mod('link_color'));
 
 ?>
 <style type="text/css">
@@ -217,13 +312,39 @@ $spicepress_menu_breakpoint = get_theme_mod('menu_breakpoint', 1100);
 	}		
 }
 
+@media (min-width: <?php echo $spicepress_menu_breakpoint; ?>px) {
+.navbar-nav li button { display: none;} 
+}
+
+@media (min-width: <?php echo $spicepress_menu_breakpoint; ?>px){
+.navbar-nav ul.dropdown-menu  .caret {
+        float: right;
+        border: none;
+}}
+
+@media (min-width: <?php echo $spicepress_menu_breakpoint; ?>px){
+.navbar-nav ul.dropdown-menu  .caret:after {
+        content: "\f0da";
+        font-family: "FontAwesome";
+        font-size: 10px;
+}}
+
+@media (max-width: <?php echo $spicepress_menu_breakpoint; ?>px){
+.caret {
+        position: absolute;
+        right: 0;
+        margin-top: 10px;
+        margin-right: 10px;
+}}
+
+
 @media (min-width: 100px) and (max-width: <?php echo $spicepress_menu_breakpoint; ?>px) { 
 	.navbar .navbar-nav > .active > a, 
 	.navbar .navbar-nav > .active > a:hover, 
 	.navbar .navbar-nav > .active > a:focus {
 		
-		 color: <?php echo $link_color; ?>;
-		background-color: transparent;
+            color: <?php echo $link_color; ?>;
+            background-color: transparent;
 	}
 	.navbar .navbar-nav > .open > a,
 	.navbar .navbar-nav > .open > a:hover,
@@ -234,9 +355,6 @@ $spicepress_menu_breakpoint = get_theme_mod('menu_breakpoint', 1100);
 		border-bottom: 1px dotted #4c4a5f; 
 	}
 }
-
-
-
 
 /*===================================================================================*/
 /*	NAVBAR

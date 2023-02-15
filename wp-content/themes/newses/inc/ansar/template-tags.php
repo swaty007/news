@@ -31,7 +31,7 @@ if (!function_exists('newses_post_categories')) :
                     $term_meta = get_option($color_id);
                     $color_class = ($term_meta) ? $term_meta['color_class_term_meta'] : 'category-color-1';
 
-                    $output .= '<a class="newses-categories ' . esc_attr($color_class) . '" href="' . esc_url(get_category_link($post_category)) . '" alt="' . esc_attr(sprintf(__('View all posts in %s', 'newses'), $post_category->name)) . '"> 
+                    $output .= '<a class="newses-categories ' . esc_attr($color_class) . '" href="' . esc_url(get_category_link($post_category)) .'"> 
                                  ' . esc_html($post_category->name) . '
                              </a>';
                 }

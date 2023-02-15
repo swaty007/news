@@ -522,6 +522,24 @@ blockquote::before {
 .mg-sidebar .mg-left-menu-widget ul li a {
 	color: #212121;
 }
+.wp-block-search .wp-block-search__button {
+    background: #6001d2;
+    border-color: #6001d2;
+    color: #fff;
+}
+.wp-block-search__input{
+    border-color: #eef3fb;
+}
+.wp-block-search__input:hover, .wp-block-search__input:focus {
+    border-color: #6001d2;
+}
+.mg-widget h2, .wp-block-search__label {
+	background: #6001d2;
+	color: #fff;
+}
+.mg-widget h2::after, .wp-block-search__label::after {
+	background: #0000000d;
+}
 /*==================== general ====================*/
 h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6 {
 	color: #212121;
@@ -603,6 +621,9 @@ h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6 {
 .mg-page-breadcrumb > li + li:before {
 	color: #222;
 }
+.mg-page-breadcrumb > li + li::after {
+	color: #222;
+}
 /*==================== blog ====================*/
 .mg-comments .mg-reply:hover, .mg-comments .mg-reply:focus {
 	color: #fff;
@@ -658,6 +679,16 @@ footer .mg-widget .calendar_wrap table thead th,footer .mg-widget .calendar_wrap
 	color: #fff;
 }
 footer .mg-social li span.icon-soci a {
+    color: #fff;
+}
+
+.mg-footer-widget-area .wp-block-tag-cloud a:hover
+{
+	background: #fff;
+	color: #000;
+}
+
+body .site-title-footer a, body .site-description-footer {
     color: #fff;
 }
 .facebook{
@@ -888,4 +919,19 @@ div.wpforms-container-full .wpforms-form button[type=submit], div.wpforms-contai
 {
     background-color: #6001d2;
     color: #fff;
+}
+
+.wp-block-tag-cloud a:hover, .wp-block-tag-cloud a:focus,
+ .wp-block-tag-cloud a:hover, .wp-block-tag-cloud a:focus,
+.mg-widget .wp-block-tag-cloud a:hover  {
+	color: #fff;
+	background: #6001d2;
+	border-color: #6001d2;
+} 
+.wd-back{
+	background-color: #fff;
+}
+.mg-sidebar .mg-widget {
+    border-color: #eee;
+    background: #fff;
 }

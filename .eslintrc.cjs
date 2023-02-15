@@ -1,11 +1,11 @@
 module.exports = {
   root: true,
   env: {
-    browser: true,
+    // browser: true,
     node: true,
   },
   parserOptions: {
-    parser: 'babel-eslint',
+    // parser: 'babel-eslint',
     "ecmaVersion": 2020,
     "sourceType": "module",
     "ecmaFeatures": {
@@ -33,7 +33,9 @@ module.exports = {
     'no-param-reassign': [2, { props: false }], // Disallow Reassignment of Function Parameters
     'padded-blocks': [2, { classes: 'never', blocks: 'never' }],
     'no-unused-expressions': 'off', // Require or disallow padding within blocks
+    'node/no-unpublished-import': 'off',
     'no-unused-vars': 'off', // Require or disallow padding within blocks
+    // 'no-unused-vars': ["error", { "args": "after-used", "varsIgnorePattern": "^_", "argsIgnorePattern": "^_" }],
     'linebreak-style': 0, // Enforce consistent linebreak style
     'object-curly-spacing': ['error', 'always'], // Enforce consistent spacing inside braces
     'indent': 0, // Enforce consistent indentation
@@ -41,13 +43,18 @@ module.exports = {
     'arrow-body-style': ["error", "as-needed"], // Require braces in arrow function body
     'node/no-unsupported-features/node-builtins': 'off',
     // 'node/no-unsupported-features/es-syntax': 'off',
-    'semi': [2, "never"],
+    'semi': [process.env.NODE_ENV === 'production' ? 'error' : 'warn', "never"],
     "comma-dangle": ["error", {
       "arrays": "always-multiline",
       "objects": "always-multiline",
       "imports": "never",
-      "exports": "never",
+      "exports": "always-multiline",
       "functions": "always-multiline",
     }],
+
+    'array-element-newline': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
+    'array-bracket-newline': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'max-len': ['off', { code: 120 }],
+    'no-undef': 'off',
   },
 }

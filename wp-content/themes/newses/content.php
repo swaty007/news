@@ -14,8 +14,7 @@
                                         <div class="col-12 col-md-6">
                                            <?php $url = newses_get_freatured_image_url($post->ID, 'full'); ?>
                                             <div class="mg-blog-thumb back-img md" style="background-image: url('<?php echo esc_url($url); ?>');">
-                                                
-                                                <span class="post-form"><i class="fa fa-camera"></i></span>
+                                                <?php echo newses_post_format_type($post); ?>
                                             </div> 
                                         </div>
                                         <div class="mg-sec-top-post col">
@@ -32,10 +31,13 @@
                                      <?php } ?>
                                     <div class="col-md-12 text-center d-flex justify-content-center">
                                         <?php //Previous / next page navigation
+                                        $prev_text =  (is_rtl()) ? "right" : "left";
+                                        $next_text =  (is_rtl()) ? "left" : "right";
                                         the_posts_pagination( array(
-                                        'prev_text'          => '<i class="fa fa-angle-left"></i>',
-                                        'next_text'          => '<i class="fa fa-angle-right"></i>',
-                                        ) ); ?>
+                                           'prev_text'          => '<i class="fa fa-angle-'.$prev_text.'"></i>',
+                                           'next_text'          => '<i class="fa fa-angle-'.$next_text.'"></i>',
+                                           ) 
+                                        ); ?> 
                                     </div>
                                 </div>
                                 <!-- // mg-posts-sec-inner -->

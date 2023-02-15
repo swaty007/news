@@ -90,6 +90,8 @@ wp-content/*
 !wp-content/themes/*
 wp-content/themes/index.php
 !.eslintrc.js
+!.eslintrc.cjs
+!.sequelizerc
 !parser
 !parser/*
 # ignore all mu-plugins, plugins, and themes

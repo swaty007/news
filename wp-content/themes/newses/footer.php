@@ -9,7 +9,7 @@
 $you_missed_enable = esc_attr(get_theme_mod('you_missed_enable','true'));
             if($you_missed_enable == true){
 ?>
-  <div class="container mg-posts-sec-inner">
+  <div class="container mg-posts-sec-inner mg-padding">
         <div class="missed-inner wd-back">
         <div class="small-list-post row">
             <?php $you_missed_title = get_theme_mod('you_missed_title', esc_html('You missed','newses'));
@@ -25,15 +25,15 @@ $you_missed_enable = esc_attr(get_theme_mod('you_missed_enable','true'));
             if ( $newses_you_missed_loop->have_posts() ) :
             while ( $newses_you_missed_loop->have_posts() ) : $newses_you_missed_loop->the_post(); ?>
                 <!--col-md-3-->
-                <div class="col-md-3 col-sm-6 pulse animated">
-                <div class="mg-blog-post-box sm mb-0">
+                <div class="col-lg-3 col-sm-6 pulse animated">
+                <div class="mg-blog-post-box sm mb-lg-0">
                   <?php $url = newses_get_freatured_image_url($post->ID, 'full'); ?>
                     <div class="mg-blog-thumb md back-img" style="background-image: url('<?php echo esc_url($url); ?>');">
                       <a href="<?php the_permalink(); ?>" class="link-div"></a>
                     <div class="mg-blog-category">
                       <?php newses_post_categories(); ?>
                       </div>
-                      <span class="post-form"><i class="fa fa-camera"></i></span>
+                      <?php echo newses_post_format_type($post); ?>
                 </div>
                     <article class="small px-0 mt-2">
                       <h4 class="title"> <a href="<?php the_permalink(); ?>" title="<?php the_title_attribute( array('before' => 'Permalink to: ','after'  => '') ); ?>"> <?php the_title(); ?></a> </h4>
@@ -74,15 +74,17 @@ $you_missed_enable = esc_attr(get_theme_mod('you_missed_enable','true'));
                 <!--Start mg-footer-widget-area-->
                 <div class="mg-footer-bottom-area">
                     <div class="container">
+                        <?php if ( is_active_sidebar( 'footer_widget_area' ) ) { ?>
                         <div class="divide-line"></div>
+                        <?php } ?>
                         <div class="row align-items-center">
                             <!--col-md-4-->
                             <div class="col-md-6">
-                               <?php the_custom_logo(); 
+                              <?php the_custom_logo(); 
                                if (display_header_text()) : ?>
                               <div class="site-branding-text">
-                              <h1 class="site-title"> <a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo('name'); ?></a></h1>
-                              <p class="site-description"><?php bloginfo('description'); ?></p>
+                              <p class="site-title-footer"> <a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php echo esc_html(get_bloginfo( 'name' )); ?></a></p>
+                              <p class="site-description-footer"><?php echo esc_html(get_bloginfo( 'description' )); ?></p>
                               </div>
                               <?php endif; ?>
                             </div>
@@ -144,7 +146,12 @@ $you_missed_enable = esc_attr(get_theme_mod('you_missed_enable','true'));
                 <div class="mg-footer-copyright">
                     <div class="container">
                         <div class="row">
-                            <div class="col-md-6 text-xs">
+                                <?php $newses_enable_footer_menu = esc_attr(get_theme_mod('newses_enable_footer_menu','true'));
+                                if($newses_enable_footer_menu == true){ ?>
+                                <div class="col-md-6 text-xs">
+                                <?php } else { ?> 
+                                <div class="col-md-12 text-xs text-center">
+                                <?php } ?>
                                 <p>
                                 <a href="<?php echo esc_url( __( 'https://wordpress.org/', 'newses' ) ); ?>">
 								<?php
@@ -158,20 +165,21 @@ $you_missed_enable = esc_attr(get_theme_mod('you_missed_enable','true'));
 								printf( esc_html__( 'Theme: %1$s by %2$s.', 'newses' ), 'Newses', '<a href="' . esc_url( __( 'https://themeansar.com/', 'newses' ) ) . '" rel="designer">Themeansar</a>' );
 								?>
 								</p>
-                            </div>
+                                </div>
 
 
-
-                            <div class="col-md-6 text-right text-xs">
-                                <?php wp_nav_menu( array(
-        								'theme_location' => 'footer',
-        								'container'  => 'nav-collapse collapse navbar-inverse-collapse',
-        								'menu_class' => 'info-right',
-        								'fallback_cb' => 'newses_fallback_page_menu',
-        								'walker' => new newses_nav_walker()
-        							) ); 
-        						?>
-                            </div>
+                                <?php if($newses_enable_footer_menu == true){ ?>
+                                <div class="col-md-6 text-right footer-menu text-xs">
+                                    <?php wp_nav_menu( array(
+            								'theme_location' => 'footer',
+            								'container'  => 'nav-collapse collapse navbar-inverse-collapse',
+            								'menu_class' => 'info-right',
+            								'fallback_cb' => 'newses_fallback_page_menu',
+            								'walker' => new newses_nav_walker()
+            							) ); 
+            						?>
+                                </div>
+                                <?php } ?>
                         </div>
                     </div>
                 </div>

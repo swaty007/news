@@ -4,8 +4,8 @@ Contributors: everestthemes
 Tags: custom-background, custom-logo, custom-menu, featured-images, threaded-comments, translation-ready, one-column, two-columns, blog, right-sidebar, theme-options, footer-widgets, left-sidebar, grid-layout, news, custom-header
 Requires PHP: 5.6
 Requires at least: 4.8.0
-Tested up to: 5.2.4
-Stable tag: 1.0.4
+Tested up to: 5.9
+Stable tag: 1.0.9
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -60,13 +60,19 @@ Everest News is distributed under the terms of the GNU GPL
 
 
 Images used in screenshot
-https://pixabay.com/en/water-summer-outdoors-sea-3211175/ (http://creativecommons.org/publicdomain/zero/1.0 - CC0)
-https://pixabay.com/en/fashion-afro-american-black-people-1835871/ (http://creativecommons.org/publicdomain/zero/1.0 - CC0)
-https://pixabay.com/en/sports-persons-running-people-731506/ (http://creativecommons.org/publicdomain/zero/1.0 - CC0)
-https://pixabay.com/en/beach-girl-landscape-leisure-1867617/ (http://creativecommons.org/publicdomain/zero/1.0 - CC0)
-https://pixabay.com/en/megaphone-loud-speaker-speaker-1480342/ (http://creativecommons.org/publicdomain/zero/1.0 - CC0)
-https://pixabay.com/en/woman-protester-mask-protest-2712315/ (http://creativecommons.org/publicdomain/zero/1.0 - CC0)
-https://pixabay.com/en/journalists-reporter-video-tv-2944634/ (http://creativecommons.org/publicdomain/zero/1.0 - CC0)
+https://pxhere.com/en/photo/125124 (http://creativecommons.org/publicdomain/zero/1.0 - CC0)
+
+https://pxhere.com/en/photo/764061 (http://creativecommons.org/publicdomain/zero/1.0 - CC0)
+
+https://pxhere.com/en/photo/6211 (http://creativecommons.org/publicdomain/zero/1.0 - CC0)
+
+https://pxhere.com/en/photo/1088659 (http://creativecommons.org/publicdomain/zero/1.0 - CC0)
+
+https://pxhere.com/en/photo/1632469 (http://creativecommons.org/publicdomain/zero/1.0 - CC0)
+
+https://pxhere.com/en/photo/637259 (http://creativecommons.org/publicdomain/zero/1.0 - CC0)
+
+https://stocksnap.io/photo/analog-camera-ME8MTJVVSL (http://creativecommons.org/publicdomain/zero/1.0 - CC0)
 Logo Image & Advertisement Image, self created GPLv2
 
 
@@ -90,6 +96,27 @@ Everest News includes support for jetpack, contact Form 7
 
 == Changelog ==
 
+= 1.0.9 - 7 April, 2022 == 
+
+- Compatibility check with WordPress 5.9
+- Added: Notice Banner added
+
+= 1.0.8 - 21 July, 2021 == 
+
+- Compatibility check with WordPress 5.8
+- Added: Theme support 'widgets-block-editor'
+
+= 1.0.7 - 17 May, 2021 == 
+
+- Compatibility check with WordPress 5.7
+
+= 1.0.6 - 12 December, 2020 == 
+
+- Compatibility check with WordPress 5.6
+
+= 1.0.5 - 25 November, 2020 == 
+
+- Fix: Minor bug fixes
 
 = 1.0.4 - 15 October, 2019 == 
 

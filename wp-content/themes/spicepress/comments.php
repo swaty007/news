@@ -15,7 +15,7 @@ function spicepress_comments( $comment, $args, $depth ){
 	global $comment_data;
 	
 	//translations
-	$leave_reply = $comment_data['translation_reply_to_coment'] ? $comment_data['translation_reply_to_coment'] : __('Reply','spicepress');
+	$leave_reply = isset($comment_data['translation_reply_to_coment']) ? $comment_data['translation_reply_to_coment'] : __('Reply','spicepress');
 ?>
 <!--Comment-->
 <div <?php comment_class('media comment-box'); ?> id="comment-<?php comment_ID(); ?>">
@@ -69,26 +69,26 @@ endif;
 
 
 <?php if ('open' == $post->comment_status) :
-	if ( get_option('comment_registration') && !$user_ID ): ?>
+	if ( get_option('comment_registration') && isset($user_ID )): ?>
 		<p><?php echo sprintf( wp_kses( 'You must be <a href="%s">logged in</a> to post a comment','spicepress' ), esc_url(site_url( 'wp-login.php' )) . '?redirect_to=' .  urlencode(esc_url(get_permalink()))); ?></p>
 		<?php else:
 	
 	echo '<article class="comment-form-section wow fadeInDown animated" data-wow-delay="0.4s">';
 	
-	$fields = array(
+	$spicepress_fields = array(
 	'author'=>'<div class="blog-form-group"><input type="text" name="author" id="author" placeholder="'.esc_attr__('Name','spicepress').'" class="blog-form-control"></div>',
 	'email'=>'<div class="blog-form-group"><input type="text" name="email" id="email" placeholder="'.esc_attr__('Email','spicepress').'" class="blog-form-control"></div>',
 	);
 	
-	function spicepress_fields( $fields )
+	function spicepress_fields( $spicepress_fields )
 	{
-		return $fields;
+		return $spicepress_fields;
 	}
 	add_filter('comment_form_default_fields','spicepress_fields');
 	
-	$defaults = array(
+	$spicepress_defaults = array(
 		
-		'fields'=> apply_filters( 'comment_form_default_fields', $fields ),
+		'fields'=> apply_filters( 'comment_form_default_fields', $spicepress_fields ),
 		'comment_field'=>'<div class="blog-form-group-textarea"><textarea id="comments" name="comment" placeholder="'.esc_attr__('Message','spicepress').'" class="blog-form-control-textarea" rows="5"></textarea></div>',
 		'logged_in_as'=>'<p class="blog-post-info-detail">' . esc_html__( "Logged in as",'spicepress').' '.'<a href="'. esc_url(admin_url( 'profile.php' )).'">'.$user_identity.'</a>'. ' <a href="'. esc_url(wp_logout_url( get_permalink() )).'" title="'.esc_attr__('Logout of this account','spicepress').'">'.esc_html__("Log out",'spicepress').'</a>' . '</p>',
 		'id_submit'=> 'blogdetail-btn',
@@ -101,7 +101,7 @@ endif;
 		
 	);
 	ob_start();
-	comment_form($defaults);
+	comment_form($spicepress_defaults);
 	echo str_replace('class="comment-form"','class="form-inline"',ob_get_clean());
 	
 	echo '</article>';

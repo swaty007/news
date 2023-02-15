@@ -20,10 +20,12 @@ spicepress_breadcrumbs();
 				// Start the Loop.
 				while ( have_posts() ) : the_post();
 					// Include the page
-					get_template_part( 'content','');
+					get_template_part( 'content','single');
 					
 					// author meta
-					spicepress_author_meta();
+					if(get_theme_mod('spicepress_enable_single_post_admin_details',true)===true):					
+						spicepress_author_meta();
+					endif;	
 					
 					comments_template( '', true ); // show comments 
 					

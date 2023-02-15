@@ -14,13 +14,13 @@ if (!function_exists('newses_taxonomy_add_new_meta_field')) :
         );
         ?>
         <div class="form-field">
-            <label for="term_meta[color_class_term_meta]"><?php _e('Color Class', 'newses'); ?></label>
+            <label for="term_meta[color_class_term_meta]"><?php esc_html_e('Color Class', 'newses'); ?></label>
             <select id="term_meta[color_class_term_meta]" name="term_meta[color_class_term_meta]">
                 <?php foreach ($cat_color as $key => $value): ?>
                     <option value="<?php echo esc_attr($key); ?>"><?php echo esc_html($value); ?></option>
                 <?php endforeach; ?>
             </select>
-            <p class="description"><?php _e('Select category color class. You can set appropriate categories color on "Categories" section of the theme customizer.', 'newses'); ?></p>
+            <p class="description"><?php esc_html_e('Select category color class. You can set appropriate categories color on "Categories" section of the theme customizer.', 'newses'); ?></p>
         </div>
         <?php
     }
@@ -42,7 +42,7 @@ if (!function_exists('newses_taxonomy_edit_meta_field')) :
         ?>
         <tr class="form-field">
             <th scope="row" valign="top"><label
-                        for="term_meta[color_class_term_meta]"><?php _e('Color Class', 'newses'); ?></label></th>
+                        for="term_meta[color_class_term_meta]"><?php esc_html_e('Color Class', 'newses'); ?></label></th>
             <td>
                 <?php
                 $cat_color = array(
@@ -52,12 +52,13 @@ if (!function_exists('newses_taxonomy_edit_meta_field')) :
                     'category-color-4' => __('Category Color 4', 'newses'),
                 );
                 ?>
+                
                 <select id="term_meta[color_class_term_meta]" name="term_meta[color_class_term_meta]">
-                    <?php foreach ($cat_color as $key => $value): ?>
-                        <option value="<?php echo esc_attr($key); ?>"<?php selected($term_meta['color_class_term_meta'], $key); ?> ><?php echo esc_html($value); ?></option>
-                    <?php endforeach; ?>
-                </select>
-                <p class="description"><?php _e('Select category color class. You can set appropriate categories color on "Categories" section of the theme customizer.', 'newses'); ?></p>
+                <?php foreach ($cat_color as $key => $value): ?>
+                    <option value="<?php echo esc_attr($key); ?>"<?php selected(isset($term_meta['color_class_term_meta'])?$term_meta['color_class_term_meta']:'', $key); ?>><?php echo esc_html($value); ?></option>
+                <?php endforeach; ?>
+               </select>
+                <p class="description"><?php esc_html_e('Select category color class. You can set appropriate categories color on "Categories" section of the theme customizer.', 'newses'); ?></p>
             </td>
         </tr>
         <?php

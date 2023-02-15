@@ -1,12 +1,10 @@
-const needle = require('needle'),
-  { googleTranslate } = require('./googleTranslate'),
-  { performance } = require('perf_hooks'),
-  { validationService, fixHtmlText } = require('./helpers/helpers')
+import needle from 'needle'
+import { googleTranslate } from './googleTranslate.js'
+import { performance } from 'perf_hooks'
+import { validationService, fixHtmlText } from './helpers/helpers.js'
+import { miffDK, miffNO } from '../.env.js'
+import mysql from 'mysql'
 
-
-// eslint-disable-next-line node/no-unpublished-require
-const { miffDK, miffNO } = require('../.env.js')
-const mysql    = require('mysql')
   let connection = mysql.createConnection(miffDK),
   mainLang = 'da'
   // connection = mysql.createConnection(miffNO),

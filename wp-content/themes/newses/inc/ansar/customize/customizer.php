@@ -222,8 +222,6 @@ add_action('customize_preview_init', 'newses_customize_preview_js');
 
 function newses_customizer_css() {
     wp_enqueue_script( 'newses-customize-controls', get_template_directory_uri() . '/assets/customizer-admin.js', array( 'customize-controls' ) );
-
-    wp_enqueue_style( 'newses-customize-controls-style', get_template_directory_uri() . '/assets/customizer-admin.css' );
 }
 add_action( 'customize_controls_enqueue_scripts', 'newses_customizer_css',0 );
 
@@ -266,6 +264,22 @@ function newses_theme_option( $wp_customize )
         )
     );
 
+    $wp_customize->add_setting('newses_center_logo_title',
+    array(
+        'default' => false,
+        'sanitize_callback' => 'newses_sanitize_checkbox',
+    )
+	);
+
+	$wp_customize->add_control('newses_center_logo_title',
+	    array(
+	        'label' => esc_html__('Display Center Site Title and Tagline', 'newses'),
+	        'section' => 'title_tagline',
+	        'type' => 'checkbox',
+	        'priority' => 55,
+
+	    )
+	);
 /*--- Get Site info control ---*/
 $wp_customize->get_control( 'header_textcolor')->label = __( 'Site Title/Tagline Color', 'newses' );
 $wp_customize->get_control( 'header_textcolor')->section = 'title_tagline';

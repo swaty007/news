@@ -2,10 +2,10 @@
 Contributors: Themeansar
 Author: Themeansar
 Requires at least: WordPress 4.7
-Tested up to: WordPress 5.7
+Tested up to: WordPress 6.1
 Requires PHP: 5.6
-Stable tag: 1.2.9.26
-Version: 1.2.9.27
+Stable tag: 1.2.9.67
+Version: 1.2.9.67
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: one-column, two-columns ,right-sidebar, flexible-header, custom-background, custom-header, custom-menu, editor-style, featured-images, footer-widgets,  theme-options, threaded-comments, rtl-language-support, translation-ready, full-width-template, custom-logo, blog, news
@@ -22,7 +22,7 @@ Newses is an indispensable Responsive News and Magazine template with a clean, m
 
 == Copyright ==
 
-Newses WordPress Theme, Copyright (c) 2020, Themeansar
+Newses WordPress Theme, Copyright (c) 2022, Themeansar
 Newses is distributed under the terms of the GNU GPLs
 
 == Credits ==
@@ -257,3 +257,122 @@ Source: https://stocksnap.io/photo/red-futuristic-EDDBMDHTVA
 
 = Version 1.2.9.27
 * Fixed styling issue.
+
+= Version 1.2.9.28
+* Fixed styling issue.
+
+= Version 1.2.9.29
+* Fixed styling issue.
+
+= Version 1.2.9.30
+* Fixed menu issue.
+
+= Version 1.2.9.31
+* Fixed boxed styling issue.
+
+= Version 1.2.9.32
+* Added Featured image support on page and full-width page.
+
+= Version 1.2.9.33
+* Fixed styling issue.
+
+= Version 1.2.9.34
+* Fixed category color issue.
+
+= Version 1.2.9.35
+* Added selected image control css.
+
+= Version 1.2.9.36
+* Added block style css.
+
+= Version 1.2.9.37
+* Fixed styling issue.
+
+= Version 1.2.9.38
+* Added Footer menu remove setting.
+
+= Version 1.2.9.39
+* Fixed styling issue.
+* Fixed Escaping issue.
+
+= Version 1.2.9.40
+* Fixed thumbnail error issue.
+
+= Version 1.2.9.41
+* Fixed Date and time spacing issue.
+
+= Version 1.2.9.42
+* Added Child Theme Support.
+
+= Version 1.2.9.43
+* Fixed styling issue.
+
+= Version 1.2.9.44
+* Fixed time settings issue.
+
+= Version 1.2.9.45
+* Fixed styling issue.
+
+= Version 1.2.9.46
+* Fixed styling issue.
+
+= Version 1.2.9.47
+* Fixed styling issue.
+* add new toggle style
+
+= Version 1.2.9.48
+* Fixed img and alt tag code issue.
+
+= Version 1.2.9.49
+* Fixed H1 tag issue on frontpage.
+
+= Version 1.2.9.50
+* Fixed marquee img styling issue.
+
+= Version 1.2.9.51
+* Added Post Format Support.
+
+= Version 1.2.9.52
+* Added Post Format Support.
+
+= Version 1.2.9.53
+* Added child theme Support.
+
+= Version 1.2.9.55
+* Fixed post format icon issue.
+
+= Version 1.2.9.56
+* Fixed category meta issue.
+
+= Version 1.2.9.57
+* Fixed styling issue.
+
+= Version 1.2.9.58
+* Remove unused code.
+
+= Version 1.2.9.59
+* Fixed post link URL issue.
+
+= Version 1.2.9.60
+* Fixed Gutenberg styling issue.
+
+= Version 1.2.9.61
+* Fixed navigation RTL issue.
+
+= Version 1.2.9.62
+* Fixed RTL style issue.
+
+= Version 1.2.9.63
+* Fixed style issue.
+
+= Version 1.2.9.64
+* Fixed RTL style issue.
+
+= Version 1.2.9.65
+* Fixed Callback issue.
+
+= Version 1.2.9.66
+* Fixed comment style issue.
+
+= Version 1.2.9.67
+* Fixed style issue.

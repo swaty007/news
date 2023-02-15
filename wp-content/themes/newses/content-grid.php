@@ -12,7 +12,7 @@
             <div class="mg-blog-post-box mb-30"> 
                 <?php $url = newses_get_freatured_image_url($post->ID, 'full'); ?>
                 <div class="mg-blog-thumb back-img md" style="background-image: url('<?php echo esc_url($url); ?>');">
-                    <span class="post-form"><i class="fa fa-camera"></i></span>
+                    <?php echo newses_post_format_type($post); ?>
                 </div> 
                 <article class="small p-3">
                     <div class="mg-blog-category">

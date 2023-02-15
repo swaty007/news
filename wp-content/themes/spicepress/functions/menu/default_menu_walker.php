@@ -1,4 +1,4 @@
-<?php 
+<?php
 function spicepress_page_menu_args( $args ) {
 	if ( ! isset( $args['show_home'] ) )
 		$args['show_home'] = true;
@@ -6,7 +6,7 @@ function spicepress_page_menu_args( $args ) {
 }
 add_filter( 'wp_page_menu_args', 'spicepress_page_menu_args' );
 
- 
+
 function spicepress_fallback_page_menu( $args = array() ) {
 
 	$defaults = array('sort_column' => 'menu_order, post_title', 'menu_class' => 'menu', 'echo' => true, 'link_before' => '', 'link_after' => '');
@@ -25,8 +25,8 @@ function spicepress_fallback_page_menu( $args = array() ) {
 			$text = $args['show_home'];
 		$class = '';
 		if ( is_front_page() && !is_paged() )
-			$class = 'class="current_page_item active"';
-		$menu .= '<li ' . $class . '><a href="' . esc_url(home_url( '/' )) . '" title="' . esc_attr($text) . '">' . $args['link_before'] . $text . $args['link_after'] . '</a></li>';
+			$class = 'class="current_page_item active menu-item"';
+		$menu .= '<li class="menu-item" ' . $class . '><a href="' . esc_url(home_url( '/' )) . '" title="' . esc_attr($text) . '">' . $args['link_before'] . $text . $args['link_after'] . '</a></li>';
 		// If the front page is a page, add it to the exclude list
 		if (get_option('show_on_front') == 'page') {
 			if ( !empty( $list_args['exclude'] ) ) {
@@ -66,6 +66,10 @@ class Spicepress_walker_page_menu extends Walker_Page{
 
 		extract($args, EXTR_SKIP);
 		$css_class = array('menu-item page_item', 'page-item-'.$page->ID);
+                if ( class_exists( 'WooCommerce' ) && is_shop() ) {
+                    $current_page = wc_get_page_id('shop');
+                }
+
 		if ( !empty($current_page) ) {
 			$_current_page = get_post( $current_page );
 			if ( in_array( $page->ID, $_current_page->ancestors ) )
@@ -80,6 +84,10 @@ class Spicepress_walker_page_menu extends Walker_Page{
 
 		$css_class = implode( ' ', apply_filters( 'page_css_class', $css_class, $page, $depth, $args, $current_page ) );
 
+                if (isset($args['pages_with_children'][$page->ID]) && $depth >= 0) {
+                    $link_after = ' <b class="caret"></b>';
+                }
+
 		$output .= $indent . '<li class="' . $css_class . '"><a href="' . esc_url(get_permalink($page->ID)) . '">' . $link_before . apply_filters( 'the_title', $page->post_title, $page->ID ) . $link_after . '</a>';
 
 		if ( !empty($show_date) ) {
@@ -92,4 +100,3 @@ class Spicepress_walker_page_menu extends Walker_Page{
 		}
 	}
 }
-?>

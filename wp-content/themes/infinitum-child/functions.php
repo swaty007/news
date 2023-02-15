@@ -1,13 +1,25 @@
 <?php
 
-require get_theme_file_path('/inc/parse-routes.php');
+require_once get_theme_file_path('/inc/parse-routes.php');
+
+
+add_action( 'wp_enqueue_scripts', 'my_theme_enqueue_styles' );
+function my_theme_enqueue_styles() {
+    $parenthandle = 'parent-style'; // This is 'twentyfifteen-style' for the Twenty Fifteen theme.
+    $theme        = wp_get_theme();
+    wp_enqueue_style( $parenthandle,
+        get_template_directory_uri() . '/style.css',
+        array(),  // If the parent theme code has a dependency, copy it to here.
+        $theme->parent()->get( 'Version' )
+    );
+}
 
 function createPost ($post, $private = false, $category = []) {
     $post_id =  wp_insert_post(array(
         'post_type' => 'post',
         'post_title' => $post['post_title'],
         'post_content' =>  html_entity_decode($post['post_content']),
-        'post_date_gmt' => $post['post_date_gmt'],
+        'post_date_gmt' => empty($post['post_date_gmt']) ? '' : $post['post_date_gmt'],
         'post_excerpt' => $post['post_excerpt'],
 //	'post_name'      => <the name>,
         'post_author'   => 2,

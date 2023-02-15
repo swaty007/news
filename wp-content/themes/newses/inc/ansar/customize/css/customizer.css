@@ -273,9 +273,9 @@ input[type="number"]:focus {
 .toggle-switch {
 	position: relative;
 	width: 64px;
-	-webkit-user-select: none;
+	/* -webkit-user-select: none;
 	-moz-user-select: none;
-	-ms-user-select: none;
+	-ms-user-select: none; */
 	float: right;
 }
 
@@ -465,4 +465,8 @@ input#_customize-input-newses_theme_layout_options-radio-wide, input#_customize-
 
 .customize-control-checkbox label {
     font-weight: 600;
+}
+
+#customize-controls .ui-checkboxradio-checked img {
+    border: 4px solid #c70909;
 }

@@ -6,6 +6,4 @@
 		do_action( 'spiceb_spicepress_sections', false );
 		get_template_part('index','news');
 		echo '</div>';
-        get_footer();
-?>
-		
+        get_footer();		

@@ -22,7 +22,7 @@ if (!function_exists('newses_banner_trending_posts')):
                 $count = 1;
                 ?>
 
-                <div class="container mt-4">
+                <div class="container mt-4 mg-padding">
                     <div class="mg-latest-news-sec">
                         <div class="mg-latest-news">
                              <div class="bn_title">
@@ -32,18 +32,30 @@ if (!function_exists('newses_banner_trending_posts')):
                                     <?php endif; ?>
                                 </h2>
                             </div>
+                            <?php if(is_rtl()){ ?> 
+                              <div class="mg-latest-news-slider marquee" data-direction='right' dir="ltr">
+                              <?php } else { ?> 
                              <div class="mg-latest-news-slider marquee">
-                                <?php
+                                <?php }
                                 if ($all_posts->have_posts()) :
                                 	global $post;
                                     while ($all_posts->have_posts()) : $all_posts->the_post();
                                         ?>
+                                        <?php if(is_rtl()){ ?> 
                                          <a href="<?php the_permalink(); ?>">
-                                         <?php if(has_post_thumbnail()){ ?>
-											                   <img class="img" <?php echo the_post_thumbnail(); ?>
-                                         <?php } ?>
-                                         	<span><?php the_title(); ?></span></a>
-                                        <?php
+                                         	<span><?php the_title(); ?></span>
+                                            <?php if(has_post_thumbnail()) { ?>
+                                            <?php echo esc_url(the_post_thumbnail()); ?>
+                                            <?php } ?>
+                                        </a>
+                                        <?php } else { ?>  
+                                        <a href="<?php the_permalink(); ?>">
+                                            <?php if(has_post_thumbnail()) { ?>
+                                            <?php echo esc_url(the_post_thumbnail()); ?>
+                                            <?php } ?>
+                                         	<span><?php the_title(); ?></span>
+                                        </a>
+                                        <?php }
                                         $count++;
                                     endwhile;
                                     endif;
@@ -84,7 +96,7 @@ if (!function_exists('newses_banner_3_posts')):
                         <div class="mg-blog-thumb sm back-img" style="background-image: url('<?php echo esc_url($url); ?>');">
                                     <a href="<?php the_permalink(); ?>" class="link-div"></a>
                             <div class="mg-blog-category"> <?php newses_post_categories(); ?> </div>
-                            <span class="post-form"><i class="fa fa-camera"></i></span>
+                            <?php echo newses_post_format_type($post); ?>
                         </div>
                         <article class="small minh">
                           
@@ -120,14 +132,13 @@ if (!function_exists('newses_banner_advertisement')):
                     $newses_banner_advertisement = wp_get_attachment_image($newses_banner_advertisement, 'full');
                     $newses_banner_advertisement_url = newses_get_option('banner_advertisement_section_url');
                     $newses_banner_advertisement_url = isset($newses_banner_advertisement_url) ? esc_url($newses_banner_advertisement_url) : '#';
-                    $newses_open_on_new_tab = newses_get_option('banner_advertisement_open_on_new_tab');
-                    $newses_open_on_new_tab = ('' != $newses_open_on_new_tab) ? '_blank' : '';
+                    $newses_open_on_new_tab = newses_get_option('banner_advertisement_open_on_new_tab', true); 
 
                     ?>
                     <div class="container">
                     <div class="row align-items-center">
                     <div class="ml-auto py-2">
-                            <a class="pull-right img-fluid" href="<?php echo esc_url($newses_banner_advertisement_url); ?>" target="<?php echo esc_attr($newses_open_on_new_tab); ?>">
+                            <a class="pull-right img-fluid" href="<?php echo esc_url($newses_banner_advertisement_url);?>"<?php if($newses_open_on_new_tab == true) { ?> target="_blank" <?php }  ?>">
                                 <?php echo $newses_banner_advertisement; ?>
                             </a>
                     </div></div></div>
@@ -317,7 +328,7 @@ if (!function_exists('newses_front_page_trending_post_section')) :
                     
                       <div class="content">
                         <?php if($url) { ?>
-                        <div class="back-img" style="background-image: url('<?php echo $url; ?>');">
+                        <div class="back-img" style="background-image: url('<?php echo esc_url($url); ?>');">
                                           <a href="<?php the_permalink(); ?>" class="link-div"></a>
                                       </div>
                         <?php } ?>
@@ -363,7 +374,7 @@ if (!function_exists('newses_front_page_banner_sidebar_2_post')) :
                             <div class="mg-blog-thumb lg back-img" style="background-image: url('<?php echo esc_url($url); ?>');">
                                 <a href="<?php the_permalink(); ?>" class="link-div"></a>
                                 <div class="mg-blog-category"> <?php newses_post_categories(); ?> </div>
-                                <span class="post-form"><i class="fa fa-camera"></i></span>
+                                <?php echo newses_post_format_type($post); ?>
                             </div>
                             <article class="small minh">
                               <h4 class="title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h4>

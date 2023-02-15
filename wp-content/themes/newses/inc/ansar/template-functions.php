@@ -125,12 +125,39 @@ function newses_get_freatured_image_url($post_id, $size = 'newses-featured')
 {
     if (has_post_thumbnail($post_id)) {
         $thumb = wp_get_attachment_image_src(get_post_thumbnail_id($post_id), $size);
-        $url = $thumb['0'];
+        $url = $thumb !== false ? '' . $thumb[0] . '' : '""';
+
     } else {
         $url = '';
     }
 
+
     return $url;
+}
+
+
+function newses_post_format_type($post_id)
+{
+    
+    if(has_post_format( 'image' ))
+    { 
+      echo '<span class="post-form"><i class="fa fa-camera"></i></span>';   
+    }
+
+    elseif(has_post_format( 'video' ))
+    { 
+      echo '<span class="post-form"><i class="fa fa-video-camera"></i></span>';   
+    }
+
+    elseif(has_post_format( 'gallery' ))
+    {
+       echo '<span class="post-form"><i class="fa fa-photo-video"></i></span>';  
+    }
+
+    else
+    {
+      echo '<span class="post-form"><i class="fa fa-camera"></i></span>';  
+    }
 }
 
 if (!function_exists('newses_archive_page_title')) :
@@ -188,26 +215,26 @@ function newses_date_display_type() {
     $header_data_enable = esc_attr(get_theme_mod('header_data_enable','true'));
     $header_time_enable = esc_attr(get_theme_mod('header_time_enable','true'));
     $newses_date_time_show_type = get_theme_mod('newses_date_time_show_type','newses_default');
+    if(($header_data_enable == true) || ($header_time_enable == true)) {
     if ( $newses_date_time_show_type == 'newses_default' ) { ?>
-        <li><i class="fa fa-calendar ml-3"></i><?php if($header_data_enable == true) {
-            echo date_i18n('D. M jS, Y ', strtotime(current_time("Y-m-d"))); }
+        <li>
+            <?php if($header_data_enable == true) { ?>
+            <i class="fa fa-calendar ml-3"></i>
+            <?php echo date_i18n('D. M jS, Y ', strtotime(current_time("Y-m-d"))); }
             if($header_time_enable == true) { ?>
             <span id="time" class="time"></span>
             <?php } ?>
         </li>                        
-    <?php } elseif( $newses_date_time_show_type == 'wordpress_date_setting')
-    { ?>
-        <li><i class="fa fa-calendar ml-3"></i><?php if($header_data_enable == true) {
-            echo date_i18n( get_option( 'date_format' ) ); }
-            if($header_time_enable == true) { ?>
+    <?php } elseif( $newses_date_time_show_type == 'wordpress_date_setting') { ?>
+        <li>
+            <?php if($header_data_enable == true) { ?>
+                <i class="fa fa-calendar ml-3"></i>
+            <?php echo date_i18n( get_option( 'date_format' ) ); } if($header_time_enable == true) {?>
             <span class="time"> <?php $format = get_option('') . ' ' . get_option('time_format');
             print date_i18n($format, current_time('timestamp')); ?></span>
-            <?php } ?>
+           <?php } ?>
         </li>
-
-
-   <?php }
-}
+   <?php } } }
 
 if (!function_exists('newses_page_edit_link')) :
 
@@ -309,7 +336,7 @@ function newses_social_share_post($post) {
 
         $single_show_share_icon = esc_attr(get_theme_mod('single_show_share_icon','true'));
                 if($single_show_share_icon == true) {
-        $post_link  = esc_url( get_the_permalink() );
+        $post_link = urlencode( esc_url( get_the_permalink() ) );
         $post_title = get_the_title();
 
         $facebook_url = add_query_arg(

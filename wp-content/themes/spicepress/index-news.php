@@ -7,7 +7,7 @@ if($spicepress_latest_news_section_enable !='off')
 <section class="home-news" id="blog">
 	<div class="container">
 		<?php
-		$spicepress_home_news_section_title = get_theme_mod('home_news_section_title',__('Latest News','spicepress'));
+		$spicepress_home_news_section_title = get_theme_mod('home_news_section_title',__('Turpis mollis','spicepress'));
 		$spicepress_home_news_section_discription = get_theme_mod('home_news_section_discription',__('Sea summo mazim ex, ea errem eleifend definitionem vim. Ut nec hinc dolor possim mei ludus efficiendi ei sea summo mazim ex.','spicepress'));
 		
 		if(($spicepress_home_news_section_title) || ($spicepress_home_news_section_discription)!='' ) { 
@@ -67,4 +67,4 @@ if($spicepress_latest_news_section_enable !='off')
 </section>
 <!-- /Latest News Section -->
 <div class="clearfix"></div>
-<?php } ?>
+<?php }

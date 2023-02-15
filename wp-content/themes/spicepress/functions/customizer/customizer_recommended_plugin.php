@@ -9,7 +9,7 @@ $config_customizer = array(
 	'recommended_plugins'       => array(
 		'spicebox' => array(
 			'recommended' => true,
-			'description' => sprintf( esc_html__( 'Install and activate %s plugin for taking full advantage of all the features this theme has to offer.', 'spicepress' ), sprintf( '<strong>%s</strong>', 'Spicebox' ) ),
+			'description' => sprintf( esc_html__( 'Install and activate %s plugin for taking full advantage of all the features this theme has to offer.', 'spicepress' ), sprintf( '<strong>%s</strong>', 'Spice Box' ) ),
 		),
 	),
 	'recommended_actions'       => array(),

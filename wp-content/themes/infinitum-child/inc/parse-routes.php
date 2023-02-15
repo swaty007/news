@@ -44,9 +44,19 @@ function insertResult($request)
             wp_send_json(false);
             return;
         }
+        wp_send_json($lang);
         $attach_id = null;
         $main_post_id = null;
         $posts = [];
+        $languages = [
+            'uk',
+            'en',
+            'ru',
+            'da',
+            'nb',
+            'zh',
+            'pl',
+        ];
         $category = [
             'uk' => [],
             'en' => [],
@@ -54,70 +64,30 @@ function insertResult($request)
             'da' => [],
             'nb' => [],
             'zh' => [],
+            'pl' => [],
         ];
-        if (!empty($json_parsed['uk']['categories'])) {
+        if (!empty($json_parsed['pl']['categories'])) {
             require_once(ABSPATH . '/wp-admin/includes/taxonomy.php');
-            for ($i = 0; $i < count($json_parsed['uk']['categories']); $i++) {
-                $catUk = wp_insert_category([
-                    'cat_name' => $json_parsed['uk']['categories'][$i],
-                    'category_parent' => pll_get_term(46, 'uk'), //Denmark-46,  nb_NO NO - 3911
-                ]);
-                $category['uk'][] = $catUk;
-
-                $catEn = wp_insert_category([
-                    'cat_name' => $json_parsed['en']['categories'][$i],
-                    'category_parent' => pll_get_term(46, 'en'), //Denmark-46,  nb_NO NO - 3911
-                ]);
-                $category['en'][] = $catEn;
-
-                if (!empty($json_parsed['zh-CN'])) {
-                    $catZh = wp_insert_category([
-                        'cat_name' => $json_parsed['zh-CN']['categories'][$i],
-                        'category_parent' => pll_get_term(46, 'zh'), //Denmark-46,  nb_NO NO - 3911
-                    ]);
-                    $category['zh'][] = $catZh;
-                }
-
-                $catRu = wp_insert_category([
-                    'cat_name' => $json_parsed['ru']['categories'][$i],
-                    'category_parent' => pll_get_term(46, 'ru'), //Denmark-46,  nb_NO NO - 3911
-                ]);
-                $category['ru'][] = $catRu;
-
-                if (!empty($json_parsed['da'])) {
-                    $catDa = wp_insert_category([
-                        'cat_name' => $json_parsed['da']['categories'][$i],
-                        'category_parent' => pll_get_term(46, 'da'), //Denmark-46,  nb_NO NO - 3911
-                    ]);
-                    $category['da'][] = $catDa;
-                }
-                if (!empty($json_parsed['nb'])) {
-                    $catNb = wp_insert_category([
-                        'cat_name' => $json_parsed['nb']['categories'][$i],
-                        'category_parent' => pll_get_term(46, 'nb'), //Denmark-46,  nb_NO NO - 3911
-                    ]);
-                    $category['nb'][] = $catNb;
-                }
-
+            for ($i = 0; $i < count($json_parsed['pl']['categories']); $i++) {
                 $arrSave = [];
-                $arrSave['uk'] = $catUk;
-                $arrSave['en'] = $catEn;
-                $arrSave['ru'] = $catRu;
-                $arrSave['zh'] = $catZh;
-                if ($catDa) {
-                    $arrSave['da'] = $catDa;
-                }
-                if ($catNb) {
-                    $arrSave['nb'] = $catNb;
+                foreach($languages as $language) {
+                    if (!empty($json_parsed[$language])) {
+                        $catId = wp_insert_category([
+                            'cat_name' => $json_parsed[$language]['categories'][$i],
+                            'category_parent' => pll_get_term(46, $language),
+                        ]);
+                        $category[$language][] = $catId;
+                        $arrSave[$language] = $catId;
+                    }
                 }
                 pll_save_term_translations($arrSave);
             }
-        };
+        }
         foreach ($json_parsed as $lang => $item) {
             if (empty($attach_id)) {
                 $attach_id = !empty($item['image']['guid']) ? create_attachment($item['image']) : 315; //default
             }
-            $post_id = createPost($item, in_array($lang, ['da', 'nb']), $category[$lang]);
+            $post_id = createPost($item, in_array($lang, ['pl']), $category[$lang]);
             set_post_thumbnail($post_id, $attach_id);
             pll_set_post_language($post_id, $lang);
 //            if ($lang !== 'da' || $lang !== 'nb') {

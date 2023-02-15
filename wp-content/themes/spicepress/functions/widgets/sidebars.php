@@ -67,4 +67,3 @@ function spicepress_widgets_init() {
 		'after_title' => '</h3></div>',
 	));
 }	                     
-?>

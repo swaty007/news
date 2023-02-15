@@ -56,7 +56,7 @@
         function my_function () {
     jQuery('.dropdown-menu').parent().addClass('dropdown');
     jQuery('li.dropdown').find('a:first').addClass('dropdown-toggle');
-    jQuery('li.dropdown').find('a:first').after( "<button type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'><i class='fa fa-angle-down'></i></button>" );
+//    jQuery('li.dropdown').find('a:first').after( "<button type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'><i class='fa fa-angle-down'></i></button>" );
     }
 
 
@@ -247,6 +247,23 @@
         });
     
     }    
+    
+    
+            jQuery('li.dropdown').find('.caret').each(function(){
+            jQuery(this).on('click', function(){
+                if( jQuery(window).width() <= breakpoint_settings.menu_breakpoint) {
+                  jQuery('li.dropdown,li.dropdown-submenu').removeClass('open');
+                  jQuery(this).parent().next().slideToggle();
+                }
+             return false;
+            });
+        });
+
+        jQuery('a,input').bind('focus', function() {
+            if(!jQuery(this).closest(".menu-item").length && ( jQuery(window).width() <= breakpoint_settings.menu_breakpoint) ) {
+               jQuery('.navbar-collapse').removeClass('in');
+            }
+        })
     
     });
 })(jQuery);

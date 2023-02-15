@@ -8,12 +8,15 @@ if (!function_exists('newses_header_section')) :
  */
 function newses_header_section()
 {
+    $header_social_icon_enable = esc_attr(get_theme_mod('header_social_icon_enable','true'));
+    $header_data_enable = esc_attr(get_theme_mod('header_data_enable','true'));
+    $header_time_enable = esc_attr(get_theme_mod('header_time_enable','true'));
+    if ( ($header_social_icon_enable == true) || ($header_data_enable == true) || ($header_time_enable == true) ) {
 ?>
 <div class="mg-head-detail d-none d-md-block">
       <div class="container">
         <div class="row align-items-center">
             <?php
-            $header_social_icon_enable = esc_attr(get_theme_mod('header_social_icon_enable','true'));
             $newses_header_fb_link = get_theme_mod('newses_header_fb_link');
             $newses_header_fb_target = esc_attr(get_theme_mod('newses_header_fb_target','true'));
             $newses_header_twt_link = get_theme_mod('newses_header_twt_link');
@@ -65,6 +68,6 @@ function newses_header_section()
     </div>
 </div>
 <?php 
-}
+} }
 endif;
 add_action('newses_action_header_section', 'newses_header_section', 5);

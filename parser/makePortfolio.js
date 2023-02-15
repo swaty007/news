@@ -1,14 +1,14 @@
-const cheerio = require('cheerio'),
-  fs = require('fs'),
-  path = require('path'),
-  { validationService, fixHtmlText } = require('./helpers/helpers')
+import * as cheerio from 'cheerio'
+import fs from 'fs'
+import path from 'path'
+import { validationService, fixHtmlText } from './helpers/helpers.js'
+import puppeteer from 'puppeteer-extra'
+import pluginStealth from 'puppeteer-extra-plugin-stealth'
+import RecaptchaPlugin from 'puppeteer-extra-plugin-recaptcha'
+import mysql from 'mysql'
+import { portfolioBD } from '../.env.js'
 
-const puppeteer = require('puppeteer-extra')
-// add stealth plugin and use defaults (all evasion techniques)
-const pluginStealth = require('puppeteer-extra-plugin-stealth')
-// add recaptcha plugin and provide it your 2captcha token
-// 2captcha is the builtin solution provider but others work as well.
-const RecaptchaPlugin = require('puppeteer-extra-plugin-recaptcha') ///dist/index
+
 const recaptchaPlugin = RecaptchaPlugin({
   provider: { id: '2captcha', token: 'XXXXXXX' },
   visualFeedback: true,
@@ -16,13 +16,7 @@ const recaptchaPlugin = RecaptchaPlugin({
 puppeteer.use(pluginStealth())
 puppeteer.use(recaptchaPlugin)
 
-const mysql    = require('mysql')
-let connection = mysql.createConnection({
-    host     : 'swaty.mysql.tools',
-    database : 'swaty_infinitum',
-    user     : 'swaty_infinitum',
-    password : 'cptxkhzt',
-  })
+let connection = mysql.createConnection(portfolioBD)
 
 class makePorfolio {
   constructor () {

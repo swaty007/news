@@ -24,7 +24,7 @@ else
 <?php wp_body_open(); ?>
 <div id="page" class="site">
 <a class="skip-link screen-reader-text" href="#content">
-<?php _e( 'Skip to content', 'newses' ); ?></a>
+<?php esc_html_e( 'Skip to content', 'newses' ); ?></a>
     <!--wrapper-->
     <div class="wrapper" id="custom-background-css">
         <header class="mg-headwidget">
@@ -42,13 +42,24 @@ else
             $newses_header_overlay_color = get_theme_mod('newses_header_overlay_color','rgba(18,16,38,0.4)');?> style="background-color:<?php echo esc_attr($newses_header_overlay_color);?>;" <?php } ?>>
                 <div class="container">
                     <div class="mg-nav-widget-area">
+                      <?php $newses_center_logo_title = get_theme_mod('newses_center_logo_title',false);
+                      if($newses_center_logo_title == false) {
+                        ?>
                         <div class="row align-items-center">
                             <div class="col-md-4 text-center-xs">
-                                <?php the_custom_logo(); 
+                              <?php } else { ?> 
+                        <div class="row align-items-center justify-content-center">
+                            <div class="col-md-12 text-center mx-auto">       
+                              <?php } ?>
+                              <?php the_custom_logo(); 
                                 if (display_header_text()) : ?>
                                 <div class="site-branding-text">
-                                <h1 class="site-title"> <a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo('name'); ?></a></h1>
-                                <p class="site-description"><?php bloginfo('description'); ?></p>
+                                <?php if (is_front_page() || is_home()) { ?>
+                                <h1 class="site-title"><a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php echo esc_html(get_bloginfo( 'name' )); ?></a></h1>
+                               <?php } else { ?>
+                                <p class="site-title"> <a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php echo esc_html(get_bloginfo( 'name' )); ?></a></p>
+                                <?php } ?>
+                                <p class="site-description"><?php echo esc_html(get_bloginfo( 'description' )); ?></p>
                                 </div>
                               <?php endif; ?>
                             </div>
@@ -67,9 +78,14 @@ else
                     <div class="m-header align-items-center">
                         <a class="mobilehomebtn" href="<?php echo esc_url( home_url() ) ?>"><span class="fa fa-home"></span></a>
                         <!-- navbar-toggle -->
-                        <button class="navbar-toggler collapsed mr-auto" type="button" data-toggle="collapse" data-target="#navbar-wp" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                          <span class="my-1 mx-2 close">X</span>
-                          <span class="navbar-toggler-icon"></span>
+                        <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbar-wp" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                          <!-- <span class="my-1 mx-2 close"></span>
+                          <span class="navbar-toggler-icon"></span> -->
+                          <div class="burger">
+                            <span class="burger-line"></span>
+                            <span class="burger-line"></span>
+                            <span class="burger-line"></span>
+                          </div>
                         </button>
                         <!-- /navbar-toggle -->
                         <?php $header_search_enable = get_theme_mod('header_search_enable','true');
@@ -150,7 +166,7 @@ else
         <?php if (is_front_page() || is_home()) { ?>
         <section class="mg-fea-area">
             <div class="overlay">
-              <div class="container">
+              <div class="container mg-padding">
                 <div class="row my-4">
                     <?php do_action('newses_action_front_page_main_section_1'); ?>
               </div>

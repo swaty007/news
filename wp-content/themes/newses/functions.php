@@ -14,7 +14,7 @@
 	require_once( trailingslashit( get_template_directory() ) . 'inc/ansar/customize-pro/class-customize.php' );
 
 	$newses_theme_start = wp_get_theme();
-	if ( 'Newses' == $newses_theme_start->name) {
+	if (( 'Newses' == $newses_theme_start->name) || ('Newstype' == $newses_theme_start->name) || ('News Zone' == $newses_theme_start->name) || ('Newsze' == $newses_theme_start->name)) {
 	if ( is_admin() ) {
 		require ($newses_theme_path . '/admin/getting-started.php');
 	}
@@ -100,6 +100,13 @@ function newses_setup() {
 		'gallery',
 		'caption',
 	) );
+
+	/*
+     * Enable support for Post Formats on posts and pages.
+     *
+     * @link https://developer.wordpress.org/themes/functionality/post-formats/
+     */
+    add_theme_support( 'post-formats', array( 'image', 'video', 'gallery' ) );
 
 	// Set up the WordPress core custom background feature.
 	add_theme_support( 'custom-background', apply_filters( 'newses_custom_background_args', array(

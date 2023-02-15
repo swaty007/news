@@ -30,7 +30,7 @@ get_header(); ?>
                                             <div class="mg-blog-category">
                                             <?php newses_post_categories(); ?>
                                             </div>
-                                                <span class="post-form"><i class="fa fa-camera"></i></span>
+                                                <?php echo newses_post_format_type($post); ?>
                                             </div> 
                                         </div>
                                             <div class="mg-sec-top-post col">

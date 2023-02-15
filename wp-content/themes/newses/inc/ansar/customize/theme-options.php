@@ -51,10 +51,6 @@ $wp_customize->add_setting(
         )
     );
 
-
-
-
-
 $wp_customize->add_section( 'header_options' , array(
         'title' => __('Top Header Options', 'newses'),
         'capability' => 'edit_theme_options',
@@ -62,7 +58,21 @@ $wp_customize->add_section( 'header_options' , array(
         'priority' => 10,
     ) );
 
-    
+    $wp_customize->add_setting('date_section_title',
+        array(
+            'sanitize_callback' => 'sanitize_text_field',
+        )
+    );
+    $wp_customize->add_control(
+        new Newses_Section_Title(
+            $wp_customize,
+            'date_section_title',
+            array(
+                'label'             => esc_html__( 'Date ', 'newses' ),
+                'section'           => 'header_options', 
+            )
+        )
+    );
     $wp_customize->add_setting('header_data_enable',
     array(
         'default' => true,
@@ -109,7 +119,21 @@ $wp_customize->add_section( 'header_options' , array(
         'section'  => 'header_options',
         'settings' => 'newses_date_time_show_type',
     ) );
-
+    $wp_customize->add_setting('header_social_icon_title',
+    array(
+        'sanitize_callback' => 'sanitize_text_field',
+    )
+    );
+    $wp_customize->add_control(
+        new Newses_Section_Title(
+            $wp_customize,
+            'header_social_icon_title',
+            array(
+                'label'             => esc_html__( 'Social Icon ', 'newses' ),
+                'section'           => 'header_options', 
+            )
+        )
+    );    
     $wp_customize->add_setting('header_social_icon_enable',
     array(
         'default' => true,
@@ -664,30 +688,29 @@ $wp_customize->add_control(
 
         )
     )
+); 
+
+// Setting - Single posts.
+$wp_customize->add_setting('newses_single_post_category',
+array(
+    'default' => true,
+    'sanitize_callback' => 'newses_sanitize_checkbox',
+)
 );
-
-
-    // Setting - Single posts.
-    $wp_customize->add_setting('newses_single_post_category',
+$wp_customize->add_control(new Newses_Toggle_Control( $wp_customize, 'newses_single_post_category', 
     array(
-        'default' => true,
-        'sanitize_callback' => 'newses_sanitize_checkbox',
+        'label' => esc_html__('Hide/Show Categories', 'newses'),
+        'type' => 'toggle',
+        'section' => 'site_single_posts_settings',
     )
-    );
-    $wp_customize->add_control(new Newses_Toggle_Control( $wp_customize, 'newses_single_post_category', 
-        array(
-            'label' => esc_html__('Hide/Show Categories', 'newses'),
-            'type' => 'toggle',
-            'section' => 'site_single_posts_settings',
-        )
-    ));
+));
 
 
-    $wp_customize->add_setting('newses_single_post_admin_details',
-    array(
-        'default' => true,
-        'sanitize_callback' => 'newses_sanitize_checkbox',
-    )
+$wp_customize->add_setting('newses_single_post_admin_details',
+array(
+    'default' => true,
+    'sanitize_callback' => 'newses_sanitize_checkbox',
+)
 );
 $wp_customize->add_control(new Newses_Toggle_Control( $wp_customize, 'newses_single_post_admin_details', 
     array(
@@ -695,14 +718,13 @@ $wp_customize->add_control(new Newses_Toggle_Control( $wp_customize, 'newses_sin
         'type' => 'toggle',
         'section' => 'site_single_posts_settings',
     )
-));
+)); 
 
-
-    $wp_customize->add_setting('newses_single_post_date',
-    array(
-        'default' => true,
-        'sanitize_callback' => 'newses_sanitize_checkbox',
-    )
+$wp_customize->add_setting('newses_single_post_date',
+array(
+    'default' => true,
+    'sanitize_callback' => 'newses_sanitize_checkbox',
+)
 );
 $wp_customize->add_control(new Newses_Toggle_Control( $wp_customize, 'newses_single_post_date', 
     array(
@@ -710,14 +732,12 @@ $wp_customize->add_control(new Newses_Toggle_Control( $wp_customize, 'newses_sin
         'type' => 'toggle',
         'section' => 'site_single_posts_settings',
     )
-));
-
-
-    $wp_customize->add_setting('newses_single_post_tag',
-    array(
-        'default' => true,
-        'sanitize_callback' => 'newses_sanitize_checkbox',
-    )
+)); 
+$wp_customize->add_setting('newses_single_post_tag',
+array(
+    'default' => true,
+    'sanitize_callback' => 'newses_sanitize_checkbox',
+)
 );
 $wp_customize->add_control(new Newses_Toggle_Control( $wp_customize, 'newses_single_post_tag', 
     array(
@@ -727,26 +747,56 @@ $wp_customize->add_control(new Newses_Toggle_Control( $wp_customize, 'newses_sin
     )
 ));
 
-    $wp_customize->add_setting('single_show_featured_image',
+$wp_customize->add_setting('single_show_featured_image',
+array(
+    'default' => $newses_default['single_show_featured_image'],
+    'capability' => 'edit_theme_options',
+    'sanitize_callback' => 'newses_sanitize_checkbox',
+)
+);
+$wp_customize->add_control(new Newses_Toggle_Control( $wp_customize, 'single_show_featured_image', 
     array(
-        'default' => $newses_default['single_show_featured_image'],
-        'capability' => 'edit_theme_options',
-        'sanitize_callback' => 'newses_sanitize_checkbox',
+        'label' => __('Hide/Show Featured Image', 'newses'),
+        'type' => 'toggle',
+        'section' => 'site_single_posts_settings',
     )
-    );
-    $wp_customize->add_control(new Newses_Toggle_Control( $wp_customize, 'single_show_featured_image', 
-        array(
-            'label' => __('Hide/Show Featured Image', 'newses'),
-            'type' => 'toggle',
-            'section' => 'site_single_posts_settings',
-        )
-    ));
+));
+$wp_customize->add_setting('single_show_share_icon',
+array(
+    'default' => $newses_default['single_show_share_icon'],
+    'capability' => 'edit_theme_options',
+    'sanitize_callback' => 'newses_sanitize_checkbox',
+)
+);
+$wp_customize->add_control(new Newses_Toggle_Control( $wp_customize, 'single_show_share_icon', 
+    array(
+        'label' => __('Hide/Show Sharing Icons', 'newses'),
+        'type' => 'toggle',
+        'section' => 'site_single_posts_settings',
+    )
+)); 
 
-    $wp_customize->add_setting('newses_enable_single_post_admin_details',
-    array(
-        'default' => true,
-        'sanitize_callback' => 'newses_sanitize_checkbox',
+$wp_customize->add_setting('newses_author_post_heading',
+array(
+    'sanitize_callback' => 'sanitize_text_field',
+)
+);
+
+$wp_customize->add_control(
+    new Newses_Section_Title(
+        $wp_customize,
+        'newses_author_post_heading',
+        array(
+            'label' => esc_html__('Author', 'newses'),
+            'section' => 'site_single_posts_settings', 
+        )
     )
+);
+$wp_customize->add_setting('newses_enable_single_post_admin_details',
+array(
+    'default' => true,
+    'sanitize_callback' => 'newses_sanitize_checkbox',
+)
 );
 $wp_customize->add_control(new Newses_Toggle_Control( $wp_customize, 'newses_enable_single_post_admin_details', 
     array(
@@ -755,24 +805,6 @@ $wp_customize->add_control(new Newses_Toggle_Control( $wp_customize, 'newses_ena
         'section' => 'site_single_posts_settings',
     )
 ));
-
-$wp_customize->add_setting('single_show_share_icon',
-    array(
-        'default' => $newses_default['single_show_share_icon'],
-        'capability' => 'edit_theme_options',
-        'sanitize_callback' => 'newses_sanitize_checkbox',
-    )
-    );
-    $wp_customize->add_control(new Newses_Toggle_Control( $wp_customize, 'single_show_share_icon', 
-        array(
-            'label' => __('Hide/Show Sharing Icons', 'newses'),
-            'type' => 'toggle',
-            'section' => 'site_single_posts_settings',
-        )
-    ));
-
-
-    
 
 $wp_customize->add_setting('newses_related_post_heading',
     array(
@@ -790,12 +822,7 @@ $wp_customize->add_control(
 
         )
     )
-);
-
-
-
-
-
+); 
 $wp_customize->add_setting('newses_enable_related_post',
     array(
         'default' => true,
@@ -848,6 +875,20 @@ $wp_customize->add_setting('newses_enable_single_post_date',
 $wp_customize->add_control(new Newses_Toggle_Control( $wp_customize, 'newses_enable_single_post_date', 
     array(
         'label' => esc_html__('Hide/Show Date', 'newses'),
+        'type' => 'toggle',
+        'section' => 'site_single_posts_settings',
+    )
+));
+
+$wp_customize->add_setting('newses_enable_single_post_author',
+    array(
+        'default' => true,
+        'sanitize_callback' => 'newses_sanitize_checkbox',
+    )
+);
+$wp_customize->add_control(new Newses_Toggle_Control( $wp_customize, 'newses_enable_single_post_author', 
+    array(
+        'label' => esc_html__('Hide/Show Author Details', 'newses'),
         'type' => 'toggle',
         'section' => 'site_single_posts_settings',
     )
@@ -920,7 +961,22 @@ $wp_customize->add_control(new Newses_Toggle_Control( $wp_customize, 'newses_ena
         'priority' => 200,
         'panel' => 'theme_option_panel',
     ) );
-    
+
+    $wp_customize->add_setting('footer_section_title',
+        array(
+            'sanitize_callback' => 'sanitize_text_field',
+        )
+    );
+    $wp_customize->add_control(
+        new Newses_Section_Title(
+            $wp_customize,
+            'footer_section_title',
+            array(
+                'label'             => esc_html__( 'Footer Section ', 'newses' ),
+                'section'           => 'footer_options', 
+            )
+        )
+    );
 
     //Footer Background image
     $wp_customize->add_setting( 
@@ -961,19 +1017,35 @@ $wp_customize->add_control(new Newses_Toggle_Control( $wp_customize, 'newses_ena
 
     
     $wp_customize->add_setting(
-                'newses_footer_column_layout', array(
-                'default' => 3,
-                'sanitize_callback' => 'newses_sanitize_select',
-            ) );
+        'newses_footer_column_layout', array(
+        'default' => 3,
+        'sanitize_callback' => 'newses_sanitize_select',
+    ) );
 
-            $wp_customize->add_control(
-                'newses_footer_column_layout', array(
-                'type' => 'select',
-                'label' => __('Select Column Layout','newses'),
-                'section' => 'footer_options',
-                'choices' => array(1=>1, 2=>2,3=>3,4=>4),
+    $wp_customize->add_control(
+        'newses_footer_column_layout', array(
+        'type' => 'select',
+        'label' => __('Select Column Layout','newses'),
+        'section' => 'footer_options',
+        'choices' => array(1=>1, 2=>2,3=>3,4=>4),
     ) );
    
+    $wp_customize->add_setting('footer_social_icon_title',
+        array(
+            'sanitize_callback' => 'sanitize_text_field',
+        )
+    );
+    $wp_customize->add_control(
+        new Newses_Section_Title(
+            $wp_customize,
+            'footer_social_icon_title',
+            array(
+                'label'             => esc_html__( 'Social Icon', 'newses' ),
+                'section'           => 'footer_options', 
+            )
+        )
+    );
+
     //Enable and disable social icon
     $wp_customize->add_setting('footer_social_icon_enable',
     array(
@@ -1209,6 +1281,42 @@ $wp_customize->add_control(new Newses_Toggle_Control( $wp_customize, 'newses_ena
             'section' => 'footer_options',
         )
     ));
+
+    $wp_customize->add_setting('newses_footer_menu_heading',
+            array(
+                'sanitize_callback' => 'sanitize_text_field',
+            )
+        );
+
+        $wp_customize->add_control(
+            new Newses_Section_Title(
+                $wp_customize,
+                'newses_footer_menu_heading',
+                array(
+                    'label' => esc_html__('Footer Menu', 'newses'),
+                    'section' => 'footer_options',
+
+                )
+            )
+        );
+
+
+
+
+
+        $wp_customize->add_setting('newses_enable_footer_menu',
+            array(
+                'default' => true,
+                'sanitize_callback' => 'newses_sanitize_checkbox',
+            )
+        );
+        $wp_customize->add_control(new Newses_Toggle_Control( $wp_customize, 'newses_enable_footer_menu', 
+            array(
+                'label' => esc_html__('Hide/Show Footer Menu', 'newses'),
+                'type' => 'toggle',
+                'section' => 'footer_options',
+            )
+        ));
     
     function newses_social_sanitize_checkbox( $input ) {
             // Boolean check 

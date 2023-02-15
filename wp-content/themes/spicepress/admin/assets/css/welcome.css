@@ -469,3 +469,11 @@ a.info-block:hover, a.info-block:active, a.info-block:focus{color:#333;}
 .theme-info-wrap h3 > i { line-height: 1.2; margin-right: 15px }
 
 .about-wrap{ margin: 25px 25px 0 20px; max-width: 100%;}
+.spicepress-fre-pro span.plan-feature {
+    line-height: 2.5rem;
+}
+@media only screen and (min-width: 769px) and (max-width: 1200px) {
+.pricing1 .plan .feature li{
+    height: 200px;
+}
+}

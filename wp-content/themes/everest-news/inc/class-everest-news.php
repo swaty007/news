@@ -134,6 +134,7 @@ class Everest_News {
 		// Open WPCS issue: {@link https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/issues/1043}.
 		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 		$GLOBALS['content_width'] = apply_filters( 'everest_news_content_width', 640 );
+		remove_theme_support( 'widgets-block-editor' );
 	}
 
 	/**

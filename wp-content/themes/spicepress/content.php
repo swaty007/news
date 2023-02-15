@@ -31,11 +31,28 @@
 					echo '</a></figure>';
 					} } ?>
 					<div class="entry-content">
-                        <?php if ( is_single() ) :?>
-                            <?php the_content( __('Read More','spicepress') ); ?>
-                        <?php else:;?>
-                            <?php the_excerpt( __('Read More','spicepress') ); ?>
-                        <?php endif;?>
-						<?php wp_link_pages( ); ?>
+					<?php
+					$spicepress_user=get_option('spicepress_user_with_1_9_1');
+  					if($spicepress_user=='old'){
+						if (get_theme_mod('spicepress_blog_content')!=null || get_theme_mod('spicepress_blog_content_length')!=null ) { 
+								spicepress_posted_content(); wp_link_pages( ); 
+								$spicepress_read_btn=get_theme_mod('spicepress_blog_content','excerpt');
+								if($spicepress_read_btn=="excerpt"){?>
+									<p><a href="<?php the_permalink();?>" class="more-link"><?php _e('Read More','spicepress'); ?></a></p>
+								<?php 
+								}
+						}else{
+								the_content( __('Read More','spicepress') );
+								wp_link_pages( );
+
+						}
+					}else{
+						spicepress_posted_content(); wp_link_pages( ); 
+						$spicepress_read_btn=get_theme_mod('spicepress_blog_content','excerpt');
+							if($spicepress_read_btn=="excerpt"){?>
+								<p><a href="<?php the_permalink();?>" class="more-link"><?php _e('Read More','spicepress'); ?></a></p>
+							<?php 
+							}
+					}?>						
 					</div>						
 				</article>
