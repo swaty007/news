@@ -29,7 +29,6 @@ class Parser {
   }
   async init () {
     this.db = await db
-
     let waitArray = []
     for(let lang of this.languages) {
       this['google_' + lang] = new googleTranslate(lang)

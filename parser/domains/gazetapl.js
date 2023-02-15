@@ -8,63 +8,88 @@ class Gazetapl extends abstractDomain {
     super(db)
     this.events = new events.EventEmitter()
     this.mainLang = 'pl'
-    this.parseUrl = 'https://wiadomosci.gazeta.pl/wojna-w-ukrainie'
-    this.category = ['wojna w ukrainie']
+    this.parseEntries = [
+      {
+        parseUrl: 'https://wiadomosci.gazeta.pl/wojna-w-ukrainie',
+        category: ['wojna w ukrainie'],
+      },
+      {
+        parseUrl: 'https://wiadomosci.gazeta.pl/spoleczenstwo',
+        category: ['Społeczeństwo'],
+      },
+      {
+        parseUrl: 'https://wiadomosci.gazeta.pl/wiadomosci/0,114881.html',
+        category: ['Świat'],
+      },
+    ]
     // this.parseUrl = 'https://fakty.tvn24.pl/fakty-o-swiecie,61'
   }
-  init () {
+  async init () {
     this.startParse()
     return this.events
   }
   async startParse () {
-    let article = await this.searchArticles()
-    console.log(article)
-  }
-  async searchArticles () {
-    let $ = await this.requestGetPage({ url: this.parseUrl })
-    let urls = []
-    $('.content_wrap .main_content ul.list_tiles>li.entry>a').each( (index, el) => {
-      urls.push($(el).attr('href'))
-    })
-    for (let page of urls) {
-      if (await this.uniqueCheck(page)) {
-        console.log('uniqueCheck failed:', page)
-        continue
-      }
-      try {
-        let $ = await this.requestGetPage({ url: page })
-        let post_title = $('#article_wrapper #article_title').text().trim()
-        let post_excerpt = $('head meta[name="Description"]').attr('content')
-        post_excerpt = post_excerpt ? post_excerpt.trim() : post_excerpt
-        let post_content = fixHtmlText($('section.art_content').html().trim())
-        let post_date_gmt = 'no date'
-        let image = {
-          guid: $('head meta[property="og:image"]').attr('content'),
-        }
-        let tags = []
-        $('.bottom_section .tags ul.tags_list li.tags_item a').each((tI, tEl) => {
-          tags.push($(tEl).text().trim())
-        })
-        // console.log(post_content)
-
-        let categories = this.category
-        let result = {
-          url: page,
-          mainLang: this.mainLang,
-          post_title,
-          post_excerpt,
-          post_content,
-          // post_date_gmt,
-          image,
-          tags,
-          categories,
-        }
-        this.events.emit('newPost', result)
-        return
-      } catch (e) {
-        console.error('searchArticles', e)
-      }
+    for (let entries of this.parseEntries) {
+      let article = await this.searchArticles(entries)
     }
+  }
+  async searchArticles (entries) {
+    return new Promise(async (resolve, reject) => {
+      let $ = await this.requestGetPage({ url: entries.parseUrl })
+      let urls = []
+      $('.content_wrap .main_content ul.list_tiles>li.entry>a').each( (index, el) => {
+        urls.push($(el).attr('href'))
+      })
+      for (let page of urls) {
+        if (await this.uniqueCheck(page)) {
+          console.log('uniqueCheck failed:', page)
+          continue
+        }
+        try {
+          let $ = await this.requestGetPage({ url: page })
+          let post_title = $('#article_wrapper #article_title').text().trim()
+          let post_excerpt = $('head meta[name="Description"]').attr('content')
+          post_excerpt = post_excerpt ? post_excerpt.trim() : post_excerpt
+          let post_content = $('section.art_content').html()
+          post_content = post_content ? fixHtmlText(post_content.trim()) : ''
+          if (!post_title || !post_content) {
+            console.error('Wrong Post Data: ', page)
+            await this.db.Post.create({
+              url: page,
+              status: -1,
+            })
+            continue
+          }
+          let post_date_gmt = 'no date'
+          let image = {
+            guid: $('head meta[property="og:image"]').attr('content'),
+          }
+          let tags = []
+          $('.bottom_section .tags ul.tags_list li.tags_item a').each((tI, tEl) => {
+            tags.push($(tEl).text().trim())
+          })
+          // console.log(post_content)
+
+          let categories = entries.category
+          let result = {
+            url: page,
+            mainLang: this.mainLang,
+            post_title,
+            post_excerpt,
+            post_content,
+            // post_date_gmt,
+            image,
+            tags,
+            categories,
+          }
+          this.events.emit('newPost', result)
+          return
+        } catch (e) {
+          console.error('searchArticles', e)
+        }
+      }
+      resolve(true)
+    })
   }
 }
 
