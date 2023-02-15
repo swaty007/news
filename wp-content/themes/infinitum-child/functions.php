@@ -27,9 +27,10 @@ function createPost ($post, $private = false, $category = []) {
         'post_category' => $category,
         'tags_input' => $post['tags'],
     ));
-//    wp_set_post_categories($post_id, $category);
-    wp_set_post_categories($post_id, $post['categories']);
-    wp_set_object_terms($post_id, $post['categories'], 'category', true);
+    wp_set_post_categories($post_id, $category, true);
+//    wp_set_post_categories($post_id, $post['categories'], true);
+    wp_set_object_terms($post_id, $category, 'category', true);
+//    wp_set_object_terms($post_id, $post['categories'], 'category', true);
 //    wp_set_post_terms
 
     //$attachment_id = media_handle_upload('image', $post_id);

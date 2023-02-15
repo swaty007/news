@@ -11,7 +11,7 @@ class abstractDomain {
         // this.totalRequest.google += 1
         if (err) {
           console.error(err, 'error Request', data.url)
-          return
+          reject()
         }
         resolve(this.parseHtml(res.body))
       })

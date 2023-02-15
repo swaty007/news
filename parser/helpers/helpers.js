@@ -10,7 +10,8 @@ function fixHtmlText (text) {
       'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'span', 'i', 'p',
       'strong', 'b', 'br', 'code', 'ul', 'li', 'ol',
       'table', 'tr', 'thead', 'tbody', 'th', 'iframe',
-      //blockquote figure img
+      'blockquote',
+      // figure img
     ],
     // ignoreTagsWithTheirContents: ['p'],
     // skipHtmlDecoding: true,

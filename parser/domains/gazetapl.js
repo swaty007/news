@@ -29,6 +29,38 @@ class Gazetapl extends abstractDomain {
         parseUrl: 'https://wiadomosci.gazeta.pl/wiadomosci/0,156046.html',
         category: ['Edukacja'],
       },
+      {
+        parseUrl: 'https://wiadomosci.gazeta.pl/wiadomosci/0,0.html',
+        category: ['Wiadomości'],
+      },
+      {
+        parseUrl: 'https://weekend.gazeta.pl/weekend/0,177341.html',
+        category: ['RODZINA'],
+      },
+      {
+        parseUrl: 'https://weekend.gazeta.pl/weekend/0,177342.html',
+        category: ['HISTORIA'],
+      },
+      {
+        parseUrl: 'https://weekend.gazeta.pl/weekend/0,177343.html',
+        category: ['BIOGRAFIE'],
+      },
+      {
+        parseUrl: 'https://weekend.gazeta.pl/weekend/0,181991.html',
+        category: ['PODRÓŻE'],
+      },
+      {
+        parseUrl: 'https://weekend.gazeta.pl/weekend/0,177333.html',
+        category: ['ROZMOWA'],
+      },
+      {
+        parseUrl: 'https://kobieta.gazeta.pl/kobieta/0,0.html',
+        category: ['Kobieta'],
+      },
+      {
+        parseUrl: 'https://www.gazeta.pl/0,0.htm',
+        category: ['Kobieta'],
+      },
     ]
     // this.parseUrl = 'https://fakty.tvn24.pl/fakty-o-swiecie,61'
   }
@@ -41,16 +73,23 @@ class Gazetapl extends abstractDomain {
     for (let entries of this.parseEntries) {
       await this.searchArticles(entries)
     }
-    console.log('%c Finish Parse and restart parse! ', 'background: #fff; color: green;font-size: 55px')
-    this.startParse()
+    console.log('Finish Parse and restart parse!')
+    setTimeout(() => {
+      this.startParse()
+    }, 30000)
   }
   async searchArticles (entries) {
-    return new Promise(async (resolve, reject) => {
       let $ = await this.requestGetPage({ url: entries.parseUrl })
       let urls = []
       $('.content_wrap .main_content ul.list_tiles>li.entry>a').each( (index, el) => {
         urls.push($(el).attr('href'))
       })
+      $('.content_wrap ul.indexPremium__list>li.indexPremium__element>a').each( (index, el) => {
+        urls.push($(el).attr('href'))
+      })
+    $('.c-main-content .sectionTiles__box>a').each( (index, el) => {
+      urls.push($(el).attr('href'))
+    })
       for (let page of urls) {
         if (await this.uniqueCheck(page)) {
           console.log('uniqueCheck failed:', page)
@@ -85,6 +124,11 @@ class Gazetapl extends abstractDomain {
           // console.log(post_content)
 
           let categories = entries.category
+          let urlParse = new URL(page)
+          let catFromUrl = urlParse.pathname.split('/')
+          if (catFromUrl[1]) {
+            categories.push(catFromUrl[1])
+          }
           let result = {
             url: page,
             mainLang: this.mainLang,
@@ -102,8 +146,7 @@ class Gazetapl extends abstractDomain {
           console.error('searchArticles', e)
         }
       }
-      resolve(true)
-    })
+      return true
   }
 }
 

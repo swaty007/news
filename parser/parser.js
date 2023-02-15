@@ -1,8 +1,7 @@
 import needle from 'needle'
-import { performance } from 'perf_hooks'
 import { googleTranslate } from './googleTranslate.js'
 import { Gazetapl } from './domains/gazetapl.js'
-import { fixHtmlText, validationService } from './helpers/helpers.js'
+import { validationService } from './helpers/helpers.js'
 import db from './models/index.js'
 
 class Parser {
@@ -23,13 +22,15 @@ class Parser {
     this.totalRequest = {
       time: 0,
     }
-
+    // this.savePost('', 'ru')
+    // return
     this.init()
   }
+
   async init () {
     this.db = await db
     let waitArray = []
-    for(let lang of this.languages) {
+    for (let lang of this.languages) {
       this['google_' + lang] = new googleTranslate(lang)
       waitArray.push(this['google_' + lang].init())
     }
@@ -38,13 +39,16 @@ class Parser {
 
     this.startLoop(Gazetapl)
   }
+
   async startLoop (emitter) {
     this.em = new emitter(this.db).init(this)
     this.em.on('newPost', async (originalPost) => {
       await this.newPost(originalPost)
     })
   }
+
   async newPost (originalPost) {
+    console.log('originalPost', originalPost)
     try {
       await this.db.Post.create({
         url: originalPost.url,
@@ -63,56 +67,64 @@ class Parser {
       },
     })
   }
+
   async setPostLanguage (originalPost) {
-    return await new Promise(  async (resolve, reject) => {
-      let translates = {
-        [originalPost.mainLang]: originalPost,
+    let translates = {
+      [originalPost.mainLang]: originalPost,
+    }
+    for (let lang of this.languages) {
+      if (lang === originalPost.mainLang) {
+        continue
       }
-      for (let lang of this.languages) {
-        if (lang === originalPost.mainLang) {
-          continue
-        }
-        let postToTranslate = originalPost
-        if (translates['en']) {
-          postToTranslate = translates['en']
-        }
-        await this.translatePost(postToTranslate, lang).then(async (data) => { // просто не нуждна такая скорость
-          translates[lang] = data
-        }).catch(err => {
-          validationService(err)
-          console.log('error post pars:', postToTranslate)
-          reject('setPostLanguage')
-        })
+      let postToTranslate = originalPost
+      if (translates['en']) {
+        postToTranslate = translates['en']
       }
-      resolve(translates)
-    })
-  }
-  async translatePost (originalPost, lang) {
-    return await new Promise(  async (resolve, reject) => {
       try {
-        let data = {
-          post_title: await this['google_' + lang].translate(originalPost.post_title),
-          post_excerpt: await this['google_' + lang].translate(originalPost.post_excerpt),
-          post_content: await this['google_' + lang].translate(originalPost.post_content),
-          // post_date_gmt: originalPost.post_date_gmt,
-          image: originalPost.image,
-          tags: await this['google_' + lang].translate(...originalPost.tags),
-          // TODO: check if more than 1 category
-          categories: [ await this['google_' + lang].translate(...originalPost.categories) ],
-        }
-        if (!data.tags) {
-          data.tags = []
-        }
-        resolve(data)
+        translates[lang] = await this.translatePost(postToTranslate, lang)
       } catch (e) {
-        console.error('go miss post and try next, on translatePost', e)
-        reject()
+        validationService(err)
+        console.log('error post pars:', postToTranslate)
+        throw new Error('setPostLanguage')
       }
-    })
+    }
+    return translates
   }
+
+  async translatePost (originalPost, lang) {
+    try {
+      let data = {
+        post_title: await this['google_' + lang].translate(originalPost.post_title),
+        post_excerpt: await this['google_' + lang].translate(originalPost.post_excerpt),
+        post_content: await this['google_' + lang].translate(originalPost.post_content),
+        // post_date_gmt: originalPost.post_date_gmt,
+        image: originalPost.image,
+      }
+      let tags = await this['google_' + lang].translate(...originalPost.tags)
+      if (typeof tags === 'object') {
+        data.tags = tags
+      } else {
+        data.tags = [tags]
+      }
+      let categories = await this['google_' + lang].translate(...originalPost.categories)
+      if (typeof categories === 'object') {
+        data.categories = categories
+      } else {
+        data.categories = [categories]
+      }
+      if (!data.tags) {
+        data.tags = []
+      }
+      return data
+    } catch (e) {
+      console.error('go miss post and try next, on translatePost', e)
+      throw new Error()
+    }
+  }
+
   async savePost (translates, mainLang) {
     return new Promise((resolve, reject) => {
-      needle.post(this.insertUrl, translates, { json : true,  headers: { 'lang': mainLang } }, (err, res) => {
+      needle.post(this.insertUrl, translates, { json: true, headers: { 'lang': mainLang } }, (err, res) => {
         if (err) {
           console.error(err, 'error Request Save', this.insertUrl)
           validationService(err)

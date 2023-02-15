@@ -38,6 +38,11 @@ function uniqueTest($request)
 function insertResult($request)
 {
     try {
+//        require_once(ABSPATH . '/wp-admin/includes/taxonomy.php');
+//        wp_send_json([
+//            'get_term_by'=>get_term_by('ID', 15837, 'category')->term_id,
+//            'pll_get_term(46, $language)' => pll_get_term(15837, 'uk')
+//        ]);
         $json_parsed = $request->get_json_params();
         $langMain = $request->get_header('lang');
         if (empty($json_parsed)) {
@@ -72,10 +77,16 @@ function insertResult($request)
                 $arrSave = [];
                 foreach($languages as $language) {
                     if (!empty($json_parsed[$language])) {
-                        $catId = wp_insert_category([
-                            'cat_name' => $json_parsed[$language]['categories'][$i],
-                            'category_parent' => pll_get_term(46, $language),
-                        ]);
+                        $catId = get_term_by('name', $json_parsed[$language]['categories'][$i], 'category');
+                        if (!empty($catId)) {
+                            $catId = pll_get_term($catId->term_id, $language);
+                        }
+                        if(empty($catId)) {
+                            $catId = wp_insert_category([
+                                'cat_name' => $json_parsed[$language]['categories'][$i],
+                                'category_parent' => pll_get_term(46, $language),
+                            ]);
+                        }
                         $category[$language][] = $catId;
                         $arrSave[$language] = $catId;
                     }
