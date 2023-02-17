@@ -1,19 +1,23 @@
 import needle from 'needle'
 import { googleTranslate } from './googleTranslate.js'
 import { Gazetapl } from './domains/gazetapl.js'
+import { De24live } from './domains/de24live.js'
 import { validationService } from './helpers/helpers.js'
 import db from './models/index.js'
 
 class Parser {
   constructor () {
     this.insertUrl = 'https://news.infinitum.tech/wp-json/parse/v1/insert'
-    this.uniqueUrl = 'https://news.infinitum.tech/wp-json/parse/v1/unique'
+    // this.insertUrl = 'https://dmg.news/wp-json/parse/v1/insert'
+    // this.uniqueUrl = 'https://news.infinitum.tech/wp-json/parse/v1/unique'
     this.languages = [
       'en', //must be first
       'uk',
       'ru',
       'zh',
-      // 'pl',
+
+      'de',
+      'pl',
 
       'da', //da_DK
       'nb', // 'no', //nb_NO
@@ -37,18 +41,32 @@ class Parser {
     await Promise.all(waitArray)
     console.log('init google')
 
-    this.startLoop(Gazetapl)
+    this.startLoop()
   }
 
-  async startLoop (emitter) {
-    this.em = new emitter(this.db).init(this)
-    this.em.on('newPost', async (originalPost) => {
-      await this.newPost(originalPost)
-    })
+  async startLoop () {
+    this.insertUrl = 'https://dmg.news/wp-json/parse/v1/insert'
+    await this.initEmitter(De24live)
+    console.log('Finish De24live go Gazetapl')
+    this.insertUrl = 'https://news.infinitum.tech/wp-json/parse/v1/insert'
+    await this.initEmitter(Gazetapl)
+    console.log('Finish Gazetapl go startLoop')
+
+    setTimeout(() => {
+      this.startLoop()
+    }, 30000)
+  }
+
+  async initEmitter (emitter) {
+    await new emitter(this.db).init(this)
+    // this.em = new emitter(this.db).init(this)
+    // this.em.on('newPost', async (originalPost) => {
+    //   console.log('onNewPost')
+      // await this.newPost(originalPost)
+    // })
   }
 
   async newPost (originalPost) {
-    console.log('originalPost', originalPost)
     try {
       await this.db.Post.create({
         url: originalPost.url,
@@ -56,7 +74,7 @@ class Parser {
         html: JSON.stringify(originalPost),
       })
     } catch (e) {
-      console.log('Database Error Create: ', e.message, e.errors)
+      console.log('Database Error Create: ', e.message, e.errors, originalPost.url)
     }
     let translatedPostData = await this.setPostLanguage(originalPost)
 

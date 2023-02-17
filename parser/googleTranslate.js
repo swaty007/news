@@ -22,6 +22,10 @@ export class googleTranslate {
       zh: 'zh-CN',
       nb: 'no',
     }
+    this.defaultText = [
+      'Infinitum.tech',
+      'dmg.news',
+    ]
     if (this.langMapper[lang]) {
       this.lang = this.langMapper[lang]
     } else {
@@ -70,12 +74,19 @@ export class googleTranslate {
     }
   }
 
+  getDefaultText () {
+    return this.defaultText[Math.floor(Math.random() * this.defaultText.length)]
+  }
+
   async translate (...texts) {
     const maxLength = 4500
     // return text.reduce((prev, string) => prev.then(result => this.translateString(string))
     //   .then(stringTranslation => [...prev, stringTranslation]), Promise.resolve([]))
     let result = []
     for (let text of texts) {
+      if (!text) {
+        return this.getDefaultText()
+      }
       text = fixHtmlText(text)
       if (text.length > maxLength) {
         let ceil = Math.ceil(text.length / maxLength)
@@ -91,8 +102,7 @@ export class googleTranslate {
           try {
             let data = await this.translateString(text.slice(Math.ceil(step), Math.ceil(last_index)))
             string += data
-          }
-          catch (e) {
+          } catch (e) {
             console.error('go to restart: BIG DATA ', e)
             await this.page.waitForTimeout(10000)
             step = last_index
@@ -110,8 +120,7 @@ export class googleTranslate {
           step = last_index
         }
         result.push(string)
-      }
-      else {
+      } else {
         await this.page.waitForTimeout(200)
         // await this.page.waitForTimeout(300)
         try {
@@ -142,10 +151,10 @@ export class googleTranslate {
 
   async translateString (string) {
     if (!string) {
-      return 'Infinitum.tech'
+      return this.getDefaultText()
     }
     if (this.translatorCache[string]) {
-      console.log('get translate from cache', string, this.translatorCache[string])
+      // console.log('get translate from cache', string, this.translatorCache[string])
       return this.translatorCache[string]
     }
     this.totalRequest.requestGoogle += 1

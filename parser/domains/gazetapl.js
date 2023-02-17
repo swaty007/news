@@ -41,42 +41,42 @@ class Gazetapl extends abstractDomain {
         parseUrl: 'https://weekend.gazeta.pl/weekend/0,177342.html',
         category: ['HISTORIA'],
       },
-      {
-        parseUrl: 'https://weekend.gazeta.pl/weekend/0,177343.html',
-        category: ['BIOGRAFIE'],
-      },
-      {
-        parseUrl: 'https://weekend.gazeta.pl/weekend/0,181991.html',
-        category: ['PODRÓŻE'],
-      },
-      {
-        parseUrl: 'https://weekend.gazeta.pl/weekend/0,177333.html',
-        category: ['ROZMOWA'],
-      },
-      {
-        parseUrl: 'https://kobieta.gazeta.pl/kobieta/0,0.html',
-        category: ['Kobieta'],
-      },
-      {
-        parseUrl: 'https://www.gazeta.pl/0,0.htm',
-        category: ['Kobieta'],
-      },
+      // {
+      //   parseUrl: 'https://weekend.gazeta.pl/weekend/0,177343.html',
+      //   category: ['BIOGRAFIE'],
+      // },
+      // {
+      //   parseUrl: 'https://weekend.gazeta.pl/weekend/0,181991.html',
+      //   category: ['PODRÓŻE'],
+      // },
+      // {
+      //   parseUrl: 'https://weekend.gazeta.pl/weekend/0,177333.html',
+      //   category: ['ROZMOWA'],
+      // },
+      // {
+      //   parseUrl: 'https://kobieta.gazeta.pl/kobieta/0,0.html',
+      //   category: ['Kobieta'],
+      // },
+      // {
+      //   parseUrl: 'https://www.gazeta.pl/0,0.htm',
+      //   category: ['Kobieta'],
+      // },
     ]
     // this.parseUrl = 'https://fakty.tvn24.pl/fakty-o-swiecie,61'
   }
-  init (cbFunction) {
+  async init (cbFunction) {
     this.parser = cbFunction
-    this.startParse()
+    await this.startParse()
     return this.events
   }
   async startParse () {
     for (let entries of this.parseEntries) {
       await this.searchArticles(entries)
     }
-    console.log('Finish Parse and restart parse!')
-    setTimeout(() => {
-      this.startParse()
-    }, 30000)
+    console.log('Finish Parse Gazetapl!')
+    // setTimeout(() => {
+    //   this.startParse()
+    // }, 30000)
   }
   async searchArticles (entries) {
       let $ = await this.requestGetPage({ url: entries.parseUrl })
@@ -92,7 +92,7 @@ class Gazetapl extends abstractDomain {
     })
       for (let page of urls) {
         if (await this.uniqueCheck(page)) {
-          console.log('uniqueCheck failed:', page)
+          // console.log('uniqueCheck failed:', page)
           continue
         }
         try {
@@ -102,6 +102,9 @@ class Gazetapl extends abstractDomain {
             post_title = $('.article .article__sidebar h1.article__title').text().trim()
           }
           let post_excerpt = $('head meta[name="Description"]').attr('content')
+          if (!post_excerpt) {
+            $('head meta[name="description"]').attr('content')
+          }
           post_excerpt = post_excerpt ? post_excerpt.trim() : post_excerpt
           let post_content = $('section.art_content').html()
           post_content = post_content ? fixHtmlText(post_content.trim()) : ''
@@ -123,12 +126,19 @@ class Gazetapl extends abstractDomain {
           })
           // console.log(post_content)
 
-          let categories = entries.category
+          let categories = []
           let urlParse = new URL(page)
           let catFromUrl = urlParse.pathname.split('/')
           if (catFromUrl[1]) {
             categories.push(catFromUrl[1])
           }
+          if (catFromUrl[2] && catFromUrl[4]) {
+            categories.push(catFromUrl[2])
+          }
+          if (!categories.length) {
+            categories.push(entries.category)
+          }
+          // console.log('categories', categories)
           let result = {
             url: page,
             mainLang: this.mainLang,
@@ -138,7 +148,7 @@ class Gazetapl extends abstractDomain {
             // post_date_gmt,
             image,
             tags,
-            categories,
+            categories: [...new Set(categories)],
           }
           // this.events.emit('newPost', result)
           await this.parser.newPost(result)
