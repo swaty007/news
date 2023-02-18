@@ -12,7 +12,8 @@ export default (sequelize, DataTypes) => {
     }
   }
   Post.init({
-    url: DataTypes.STRING,
+    url: DataTypes.STRING(555),
+    name: DataTypes.STRING(750),
     status: DataTypes.INTEGER,
     html: DataTypes.TEXT('long'),
   }, {

@@ -1,11 +1,17 @@
 import needle from 'needle'
-import { googleTranslate } from './googleTranslate.js'
-import { Gazetapl } from './domains/gazetapl.js'
-import { De24live } from './domains/de24live.js'
-import { validationService } from './helpers/helpers.js'
+import { GoogleTranslate } from './googleTranslate'
+import { Gazetapl } from './domains/gazetapl'
+import { De24live } from './domains/de24live'
+import { validationService } from './helpers/helpers'
 import db from './models/index.js'
 
-class Parser {
+class Parser implements ParserInstance{
+  insertUrl: string
+  languages: Languages[]
+  totalRequest: { time: number }
+  db: { [key: string]: any }
+  translates: Map<Languages, GoogleTranslate>
+  
   constructor () {
     this.insertUrl = 'https://news.infinitum.tech/wp-json/parse/v1/insert'
     // this.insertUrl = 'https://dmg.news/wp-json/parse/v1/insert'
@@ -15,28 +21,33 @@ class Parser {
       'uk',
       'ru',
       'zh',
-
       'de',
       'pl',
 
       'da', //da_DK
       'nb', // 'no', //nb_NO
     ]
-    this.results = []
     this.totalRequest = {
       time: 0,
     }
     // this.savePost('', 'ru')
     // return
+    this.translates = new Map()
+    for (const lang of this.languages) {
+      this.translates.set(lang, new GoogleTranslate(lang))
+    }
+    this.db = db
     this.init()
   }
 
   async init () {
-    this.db = await db
-    let waitArray = []
-    for (let lang of this.languages) {
-      this['google_' + lang] = new googleTranslate(lang)
-      waitArray.push(this['google_' + lang].init())
+    this.db = await this.db
+    const waitArray = []
+    for (const lang of this.languages) {
+      const translator = this.translates.get(lang)
+      if (translator) {
+        waitArray.push(translator.init())
+      }
     }
     await Promise.all(waitArray)
     console.log('init google')
@@ -57,7 +68,7 @@ class Parser {
     }, 30000)
   }
 
-  async initEmitter (emitter) {
+  async initEmitter (emitter: Class<Domain>) {
     await new emitter(this.db).init(this)
     // this.em = new emitter(this.db).init(this)
     // this.em.on('newPost', async (originalPost) => {
@@ -66,17 +77,27 @@ class Parser {
     // })
   }
 
-  async newPost (originalPost) {
+  async newPost (originalPost: localPost) {
+    const post = await this.db.Post.findOne({
+      where: {
+        name: originalPost.post_title,
+      },
+    })
+    if (post && post.status !== 1) {
+      console.log('unique post name', originalPost.url, post.url, post.status)
+      return
+    }
     try {
       await this.db.Post.create({
         url: originalPost.url,
+        name: originalPost.post_title,
         status: 1,
         html: JSON.stringify(originalPost),
       })
-    } catch (e) {
+    } catch (e: any) {
       console.log('Database Error Create: ', e.message, e.errors, originalPost.url)
     }
-    let translatedPostData = await this.setPostLanguage(originalPost)
+    const translatedPostData = await this.setPostLanguage(originalPost)
 
     await this.savePost(translatedPostData, originalPost.mainLang)
     await this.db.Post.update({ status: 5 }, {
@@ -86,22 +107,24 @@ class Parser {
     })
   }
 
-  async setPostLanguage (originalPost) {
-    let translates = {
-      [originalPost.mainLang]: originalPost,
+  async setPostLanguage (originalPost: localPost): Promise<{ [key in Languages]?: RestAPIPost }> {
+    const { mainLang, url, ...post } = originalPost
+    const translates = {
+      [mainLang]: post,
     }
-    for (let lang of this.languages) {
-      if (lang === originalPost.mainLang) {
+    for (const lang of this.languages) {
+      if (lang === mainLang) {
         continue
       }
-      let postToTranslate = originalPost
+      let postToTranslate = post
+      // translates['ens'] = post
       if (translates['en']) {
         postToTranslate = translates['en']
       }
       try {
         translates[lang] = await this.translatePost(postToTranslate, lang)
       } catch (e) {
-        validationService(err)
+        validationService(e)
         console.log('error post pars:', postToTranslate)
         throw new Error('setPostLanguage')
       }
@@ -109,29 +132,21 @@ class Parser {
     return translates
   }
 
-  async translatePost (originalPost, lang) {
+  async translatePost (originalPost: RestAPIPost, lang: Languages): Promise<RestAPIPost> {
     try {
-      let data = {
-        post_title: await this['google_' + lang].translate(originalPost.post_title),
-        post_excerpt: await this['google_' + lang].translate(originalPost.post_excerpt),
-        post_content: await this['google_' + lang].translate(originalPost.post_content),
+      const translator = this.translates.get(lang)
+      if (!translator) {
+        throw new Error('Didnt find this.translates.get(lang)')
+      }
+
+      const data: RestAPIPost = {
+        post_title: (await translator.translate(originalPost.post_title)).join(),
+        post_excerpt: (await translator.translate(originalPost.post_excerpt)).join(),
+        post_content: (await translator.translate(originalPost.post_content)).join(),
         // post_date_gmt: originalPost.post_date_gmt,
         image: originalPost.image,
-      }
-      let tags = await this['google_' + lang].translate(...originalPost.tags)
-      if (typeof tags === 'object') {
-        data.tags = tags
-      } else {
-        data.tags = [tags]
-      }
-      let categories = await this['google_' + lang].translate(...originalPost.categories)
-      if (typeof categories === 'object') {
-        data.categories = categories
-      } else {
-        data.categories = [categories]
-      }
-      if (!data.tags) {
-        data.tags = []
+        tags: await translator.translate(...originalPost.tags),
+        categories: await translator.translate(...originalPost.categories),
       }
       return data
     } catch (e) {
@@ -140,7 +155,7 @@ class Parser {
     }
   }
 
-  async savePost (translates, mainLang) {
+  async savePost (translates: { [key in Languages]?: RestAPIPost }, mainLang: Languages): Promise<boolean> {
     return new Promise((resolve, reject) => {
       needle.post(this.insertUrl, translates, { json: true, headers: { 'lang': mainLang } }, (err, res) => {
         if (err) {
@@ -159,6 +174,9 @@ class Parser {
 }
 
 new Parser()
+export {
+  Parser,
+}
 // module.exports = {
 //   Parser
 // };

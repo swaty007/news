@@ -1,12 +1,13 @@
-import events from 'events'
-import { abstractDomain } from './abstractDomain.js'
-import { validationService, fixHtmlText } from '../helpers/helpers.js'
+import { abstractDomain } from './abstractDomain'
+import { validationService, fixHtmlText } from '../helpers/helpers'
 
 
-class Gazetapl extends abstractDomain {
-  constructor (db) {
+class Gazetapl extends abstractDomain implements Domain {
+  parseEntries: parseEntries[]
+  mainLang: Languages
+
+  constructor (db: { [key: string]: any }) {
     super(db)
-    this.events = new events.EventEmitter()
     this.mainLang = 'pl'
     this.parseEntries = [
       {
@@ -64,13 +65,8 @@ class Gazetapl extends abstractDomain {
     ]
     // this.parseUrl = 'https://fakty.tvn24.pl/fakty-o-swiecie,61'
   }
-  async init (cbFunction) {
-    this.parser = cbFunction
-    await this.startParse()
-    return this.events
-  }
   async startParse () {
-    for (let entries of this.parseEntries) {
+    for (const entries of this.parseEntries) {
       await this.searchArticles(entries)
     }
     console.log('Finish Parse Gazetapl!')
@@ -78,25 +74,46 @@ class Gazetapl extends abstractDomain {
     //   this.startParse()
     // }, 30000)
   }
-  async searchArticles (entries) {
-      let $ = await this.requestGetPage({ url: entries.parseUrl })
-      let urls = []
+  async searchArticles (entries: parseEntries) {
+      const $ = await this.requestGetPage({ url: entries.parseUrl })
+      const urls: string[] = []
       $('.content_wrap .main_content ul.list_tiles>li.entry>a').each( (index, el) => {
-        urls.push($(el).attr('href'))
+        const href = $(el).attr('href')
+        if (href) {
+          urls.push(href)
+        }
       })
       $('.content_wrap ul.indexPremium__list>li.indexPremium__element>a').each( (index, el) => {
-        urls.push($(el).attr('href'))
+        const href = $(el).attr('href')
+        if (href) {
+          urls.push(href)
+        }
       })
     $('.c-main-content .sectionTiles__box>a').each( (index, el) => {
-      urls.push($(el).attr('href'))
+      const href = $(el).attr('href')
+      if (href) {
+        urls.push(href)
+      }
     })
-      for (let page of urls) {
+    // $('a.related_article_link').each( (index, el) => {
+    //   const href = $(el).attr('href')
+    //   if (href) {
+    //     urls.push(href)
+    //   }
+    // })
+    // $('.newsBox__popularList .newsBox__itemLink').each( (index, el) => {
+    //   const href = $(el).attr('href')
+    //   if (href) {
+    //     urls.push(href)
+    //   }
+    // })
+      for (const page of urls) {
         if (await this.uniqueCheck(page)) {
           // console.log('uniqueCheck failed:', page)
           continue
         }
         try {
-          let $ = await this.requestGetPage({ url: page })
+          const $ = await this.requestGetPage({ url: page })
           let post_title = $('#article_wrapper #article_title').text().trim()
           if(!post_title) {
             post_title = $('.article .article__sidebar h1.article__title').text().trim()
@@ -105,7 +122,7 @@ class Gazetapl extends abstractDomain {
           if (!post_excerpt) {
             $('head meta[name="description"]').attr('content')
           }
-          post_excerpt = post_excerpt ? post_excerpt.trim() : post_excerpt
+          post_excerpt = post_excerpt ? post_excerpt.trim() : ''
           let post_content = $('section.art_content').html()
           post_content = post_content ? fixHtmlText(post_content.trim()) : ''
           if (!post_title || !post_content) {
@@ -116,19 +133,18 @@ class Gazetapl extends abstractDomain {
             })
             continue
           }
-          let post_date_gmt = 'no date'
-          let image = {
-            guid: $('head meta[property="og:image"]').attr('content'),
+          const image = {
+            guid: $('head meta[property="og:image"]').attr('content') ?? '',
           }
-          let tags = []
+          const tags: string[] = []
           $('.bottom_section .tags ul.tags_list li.tags_item a').each((tI, tEl) => {
             tags.push($(tEl).text().trim())
           })
           // console.log(post_content)
 
-          let categories = []
-          let urlParse = new URL(page)
-          let catFromUrl = urlParse.pathname.split('/')
+          const categories: string[] = []
+          const urlParse = new URL(page)
+          const catFromUrl = urlParse.pathname.split('/')
           if (catFromUrl[1]) {
             categories.push(catFromUrl[1])
           }
@@ -136,10 +152,10 @@ class Gazetapl extends abstractDomain {
             categories.push(catFromUrl[2])
           }
           if (!categories.length) {
-            categories.push(entries.category)
+            categories.push(...entries.category)
           }
           // console.log('categories', categories)
-          let result = {
+          const result: localPost = {
             url: page,
             mainLang: this.mainLang,
             post_title,

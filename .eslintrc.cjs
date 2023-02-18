@@ -7,9 +7,9 @@ module.exports = {
   },
   parserOptions: {
     // parser: 'babel-eslint',
-    "ecmaVersion": 2020,
-    "sourceType": "module",
-    "ecmaFeatures": {
+    ecmaVersion: 2020,
+    sourceType: "module",
+    ecmaFeatures: {
       "jsx": true,
     },
   },
@@ -18,11 +18,30 @@ module.exports = {
     // consider switching to `plugin:vue/strongly-recommended` or `plugin:vue/recommended` for stricter rules.
     // '@nuxtjs',
     // 'plugin:vue/essential',
+    // '@typescript-eslint',
     'eslint:recommended',
     "plugin:node/recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  parser: "@typescript-eslint/parser",
+  overrides: [
+    // {
+    //   "files": ["**/*.ts", "**/*.tsx"],
+    //   "extends": [
+    //     // "@typescript-eslint",
+    //     "eslint:recommended",
+    //     "plugin:node/recommended",
+    //     "plugin:@typescript-eslint/recommended",
+    //     "plugin:@typescript-eslint/eslint-recommended",
+    //   ],
+    //   "parser": "@typescript-eslint/parser",
+    //   "plugins": ["@typescript-eslint"],
+    // }
   ],
   // required to lint *.vue files
   plugins: [
+    "@typescript-eslint",
     // 'vue'
   ],
   // add your custom rules here
@@ -58,4 +77,9 @@ module.exports = {
     'max-len': ['off', { code: 120 }],
     'no-undef': 'off',
   },
+  "settings": {
+    "node": {
+      "tryExtensions": [".js", ".json", ".node", ".ts", ".d.ts"]
+    },
+  }
 }

@@ -61,6 +61,7 @@ Thumbs.db
 !readme.md
 
 !webpack.config.js
+!webpack.config.mjs
 !.babelrc
 !gulpfile.babel.js
 !settings.js

@@ -1,12 +1,13 @@
-import events from 'events'
-import { abstractDomain } from './abstractDomain.js'
-import { validationService, fixHtmlText } from '../helpers/helpers.js'
+import { abstractDomain } from './abstractDomain'
+import { validationService, fixHtmlText } from '../helpers/helpers'
 
 
-class De24live extends abstractDomain {
-  constructor (db) {
+class De24live extends abstractDomain implements Domain {
+  parseEntries: parseEntries[]
+  mainLang: Languages
+
+  constructor (db: { [key: string]: any }) {
     super(db)
-    this.events = new events.EventEmitter()
     this.mainLang = 'de'
     this.parseEntries = [
       {
@@ -39,13 +40,8 @@ class De24live extends abstractDomain {
       },
     ]
   }
-  async init (cbFunction) {
-    this.parser = cbFunction
-    await this.startParse()
-    return this.events
-  }
   async startParse () {
-    for (let entries of this.parseEntries) {
+    for (const entries of this.parseEntries) {
       await this.searchArticles(entries)
     }
     console.log('Finish Parse De24live!')
@@ -53,20 +49,24 @@ class De24live extends abstractDomain {
     //   this.startParse()
     // }, 30000)
   }
-  async searchArticles (entries) {
-    let $ = await this.requestGetPage({ url: entries.parseUrl })
-    let urls = []
-    $('#wrap section.banner .xlBox a.story').each( (index, el) => {
-      urls.push($(el).attr('href'))
+  async searchArticles (entries: parseEntries) {
+    const $ = await this.requestGetPage({ url: entries.parseUrl })
+    const urls: string[] = []
+    // $('#wrap section.banner .xlBox a.story').each( (index, el) => {
+    $('#wrap a.story').each( (index, el) => {
+      const href = $(el).attr('href')
+      if (href) {
+        urls.push(href)
+      }
     })
-    for (let page of urls) {
+    for (const page of urls) {
       if (await this.uniqueCheck(page)) {
         // console.log('uniqueCheck failed:', page)
         continue
       }
       try {
-        let $ = await this.requestGetPage({ url: page })
-        let post_title = $('.articleTitelBox h1').text().trim()
+        const $ = await this.requestGetPage({ url: page })
+        const post_title = $('.articleTitelBox h1').text().trim()
         if(!post_title) {
           // post_title = $('.article .article__sidebar h1.article__title').text().trim()
         }
@@ -74,7 +74,7 @@ class De24live extends abstractDomain {
         if (!post_excerpt) {
           post_excerpt = $('head meta[name="Description"]').attr('content')
         }
-        post_excerpt = post_excerpt ? post_excerpt.trim() : post_excerpt
+        post_excerpt = post_excerpt ? post_excerpt.trim() : ''
         let post_content = $('div.articleTextBox').html()
         post_content = post_content ? fixHtmlText(post_content.trim()) : ''
         if (!post_title || !post_content) {
@@ -85,19 +85,18 @@ class De24live extends abstractDomain {
           })
           continue
         }
-        let post_date_gmt = 'no date'
-        let image = {
-          guid: $('head meta[property="og:image"]').attr('content'),
+        const image = {
+          guid: $('head meta[property="og:image"]').attr('content') ?? '',
         }
-        let tags = []
+        const tags: string[] = []
         // $('.bottom_section .tags ul.tags_list li.tags_item a').each((tI, tEl) => {
         //   tags.push($(tEl).text().trim())
         // })
         // console.log(post_content)
 
-        let categories = []
-        let urlParse = new URL(page)
-        let catFromUrl = urlParse.pathname.split('/')
+        const categories: string[] = []
+        const urlParse = new URL(page)
+        const catFromUrl = urlParse.pathname.split('/')
         if (catFromUrl[1]) {
           categories.push(catFromUrl[1])
         }
@@ -105,10 +104,10 @@ class De24live extends abstractDomain {
           categories.push(catFromUrl[2])
         }
         if (!categories.length) {
-          categories.push(entries.category)
+          categories.push(...entries.category)
         }
         // console.log('categories2', categories)
-        let result = {
+        const result: localPost = {
           url: page,
           mainLang: this.mainLang,
           post_title,

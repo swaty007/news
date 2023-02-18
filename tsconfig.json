@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "module": "esnext",
+    "module": "node16",
     "strict": true,
     "jsx": "preserve",
     "importHelpers": true,
@@ -12,12 +12,13 @@
     "sourceMap": true,
     "baseUrl": ".",
     "types": [
-      "webpack-env",
-      "jquery"
+//      "webpack-env", //  npx tsc
+      "node",
+//      "jquery"
     ],
     "paths": {
       "@/*": [
-        "js/*"
+        "parser/*"
       ]
     },
     "lib": [
@@ -127,9 +128,9 @@
 //    "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
   },
   "include": [
-    "js/**/*.ts",
-    "js/**/*.tsx",
-    "js/**/*.vue",
+    "parser/**/*.ts",
+    "parser/**/*.tsx",
+    "parser/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx"
   ],

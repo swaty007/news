@@ -79,6 +79,100 @@ function create_attachment ($attach) {
 }
 
 
+add_filter( 'the_content', 'updatePostContent', 1000);
+
+function updatePostContent( $content ) {
+    global $post;
+    $lang = pll_get_post_language($post->ID);
+    $posts = get_posts([
+        'post_type' => 'post',
+        'post_status' => ['publish'],
+        'posts_per_page' => -1,
+        'lang' => $lang,
+    ]);
+    foreach($posts as $item) {
+        if ($item->ID === $post->ID) continue;
+//        $titles = explode('.', $post->post_title);
+//        foreach($titles as $title) {
+//            $res = strpos($content, $title);
+//            if ($res) {
+//                var_dump($title);
+//            }
+//        }
+        $words = explode(" ", $item->post_title);
+        $groups = array();
+        for ($i = 0; $i < count($words); $i += 4) {
+            $group = array_slice($words, $i, 4);
+            $groups[] = implode(" ", $group);
+        }
+
+        foreach ($groups as $group) {
+            if (strpos($content, $group) && mb_strlen(trim($group)) > 10) {
+                $content = str_replace($group, "<a href='" . get_permalink($item) . "' target='_blank'>$group</a>", $content);
+            }
+        }
+
+
+    }
+//        $similarity = cosineSimilarity($post->post_title, $content);
+//        if (round($similarity, 2) > 1) {
+//            var_dump($post->post_title);
+//        }
+
+//    $title = "Это текст статьи";
+//    $contents = "Это текст статьи. Он может состоять из нескольких абзацев. В нем могут быть ссылки и другие элементы разметки.";
+//    $similarity = cosineSimilarity($title, $contents);
+//    var_dump(round($similarity, 2));
+    return $content;
+}
+
+
+function cosineSimilarity($text1, $text2) {
+    // Переводим тексты в массивы токенов
+    $tokens1 = tokenize($text1);
+    $tokens2 = tokenize($text2);
+    // Создаем общий набор токенов
+    $tokens = array_unique(array_merge($tokens1, $tokens2));
+    // Создаем векторы для каждого текста
+    $vector1 = array();
+    $vector2 = array();
+    foreach ($tokens as $token) {
+        // Вычисляем количество вхождений токена в каждом тексте
+        $count1 = count(array_keys($tokens1, $token));
+        $count2 = count(array_keys($tokens2, $token));
+        // Добавляем значение вектора для каждого текста
+        array_push($vector1, $count1);
+        array_push($vector2, $count2);
+    }
+    // Вычисляем длины векторов
+    $length1 = sqrt(array_reduce($vector1, function($carry, $value) {
+        return $carry + pow($value, 2);
+    }, 0));
+    $length2 = sqrt(array_reduce($vector2, function($carry, $value) {
+        return $carry + pow($value, 2);
+    }, 0));
+    // Вычисляем косинусное сходство
+    $dotProduct = array_reduce($vector1, function($carry, $value) use ($vector1, $vector2) {
+        $key = array_search($value, $vector1);
+        return $carry + ($value * $vector2[$key]);
+    }, 0);
+    $cosineSimilarity = $dotProduct / ($length1 * $length2);
+    return $cosineSimilarity;
+}
+
+function tokenize($text) {
+    // Удаляем знаки препинания и приводим к нижнему регистру
+//    $text = preg_replace("/[^a-z0-9]+/i", " ", $text);
+//    $text = strtolower(trim($text));
+    // Разбиваем на слова и возвращаем массив
+//    return explode(" ", $text);
+    $text = preg_replace("/[^\p{L}\p{N}]+/u", " ", $text);
+    $text = mb_strtolower(trim($text), 'UTF-8');
+    // Разбиваем на слова и возвращаем массив
+    return preg_split("/\s+/u", $text);
+}
+
+
 // thumbnail disable start
 function shapeSpace_customize_image_sizes($sizes) {
     unset($sizes['thumbnail']);    // disable thumbnail size

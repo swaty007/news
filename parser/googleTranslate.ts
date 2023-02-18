@@ -1,7 +1,8 @@
 import puppeteer from 'puppeteer-extra'
 import pluginStealth from 'puppeteer-extra-plugin-stealth'
 import RecaptchaPlugin from 'puppeteer-extra-plugin-recaptcha'
-import { validationService, fixHtmlText, getCurrentPage } from './helpers/helpers.js'
+import { validationService, fixHtmlText, getCurrentPage } from './helpers/helpers'
+import { Browser, Page } from 'puppeteer'
 
 const recaptchaPlugin = RecaptchaPlugin({
   provider: { id: '2captcha', token: 'XXXXXXX' },
@@ -10,8 +11,17 @@ const recaptchaPlugin = RecaptchaPlugin({
 puppeteer.use(pluginStealth())
 puppeteer.use(recaptchaPlugin)
 
-export class googleTranslate {
-  constructor (lang = 'ru') {
+class GoogleTranslate{
+  totalRequest: { time: number; requestGoogle: number }
+  translatorCache: { [key: string]: string }
+  cacheStringLength: number
+  langMapper: { [key: string]: string }
+  defaultText: string[]
+  lang: string
+  browser!: Browser
+  page!: Page
+
+  constructor (lang: Languages = 'ru') {
     this.totalRequest = {
       time: 0,
       requestGoogle: 0,
@@ -33,7 +43,7 @@ export class googleTranslate {
     }
   }
 
-  async init () {
+  async init (): Promise<void> {
     this.browser = await puppeteer.launch({
       args: [
         '--no-sandbox',
@@ -48,7 +58,6 @@ export class googleTranslate {
       handleSIGINT: true, // <boolean> Close the browser process on Ctrl-C. Defaults to true.
       handleSIGTERM: true, // <boolean> Close the browser process on SIGTERM. Defaults to true.
       handleSIGHUP: true, // <boolean> Close the browser process on SIGHUP. Defaults to true.
-      autoClose: true,
       executablePath: '/opt/homebrew/bin/chromium',
     })
     try {
@@ -58,7 +67,7 @@ export class googleTranslate {
       // await page.goto(`https://translate.google.ru/#view=home&op=translate&sl=auto&tl=${ this.lang }&`, { waitUntil: 'networkidle0' })
       await page.goto(`https://translate.google.ru/#view=home&sl=auto&tl=${this.lang}&op=translate`, { waitUntil: 'networkidle0' })
       await page.solveRecaptchas()
-      let input = await page.$('#source')
+      const input = await page.$('#source')
       if (input == null) {
         console.log('error find #source')
         // await this.browser.close()
@@ -74,33 +83,36 @@ export class googleTranslate {
     }
   }
 
-  getDefaultText () {
+  getDefaultText (): string {
     return this.defaultText[Math.floor(Math.random() * this.defaultText.length)]
   }
 
-  async translate (...texts) {
+  async translate (...texts: string[]): Promise<string[]> {
     const maxLength = 4500
     // return text.reduce((prev, string) => prev.then(result => this.translateString(string))
     //   .then(stringTranslation => [...prev, stringTranslation]), Promise.resolve([]))
-    let result = []
+    if(!texts.length) {
+      return [this.getDefaultText()]
+    }
+    const result = []
     for (let text of texts) {
       if (!text) {
-        return this.getDefaultText()
+        return [this.getDefaultText()]
       }
       text = fixHtmlText(text)
       if (text.length > maxLength) {
-        let ceil = Math.ceil(text.length / maxLength)
+        // let ceil = Math.ceil(text.length / maxLength)
         let string = ''
 
         let step = 0
         while (text.length > step) {
           await this.page.waitForTimeout(200)
-          let slice = text.slice(step, maxLength)
+          const slice = text.slice(step, maxLength)
           let last_index = slice.lastIndexOf('.')
           last_index = last_index > 0 ? last_index : step + maxLength
           // await new Promise((resolve, reject) => {
           try {
-            let data = await this.translateString(text.slice(Math.ceil(step), Math.ceil(last_index)))
+            const data = await this.translateString(text.slice(Math.ceil(step), Math.ceil(last_index)))
             string += data
           } catch (e) {
             console.error('go to restart: BIG DATA ', e)
@@ -109,7 +121,7 @@ export class googleTranslate {
             try {
               await this.finish()
               await this.init()
-              let data = this.translateString(text.slice(Math.ceil(step), Math.ceil(last_index + maxLength)))
+              const data = this.translateString(text.slice(Math.ceil(step), Math.ceil(last_index + maxLength)))
               string += data
             } catch (e) {
               await this.page.screenshot({ path: './parser/photos/big' + Date.now() + '.png', fullPage: true })
@@ -124,7 +136,7 @@ export class googleTranslate {
         await this.page.waitForTimeout(200)
         // await this.page.waitForTimeout(300)
         try {
-          let res = await this.translateString(text)
+          const res = await this.translateString(text)
           result.push(res)
         } catch (e) {
           console.error('go to restart: Small DATA')
@@ -132,7 +144,7 @@ export class googleTranslate {
           try {
             await this.finish()
             await this.init()
-            let res = await this.translateString(text)
+            const res = await this.translateString(text)
             result.push(res)
           } catch (e) {
             console.error('gg bro SMALL')
@@ -141,15 +153,15 @@ export class googleTranslate {
         }
       }
     }
-    if (result.length <= 1) {
-      return result[0]
-    }
-    else {
-      return result
-    }
+    return result
+    // if (result.length <= 1) {
+    //   return result[0]
+    // } else {
+    //   return result
+    // }
   }
 
-  async translateString (string) {
+  async translateString (string: string) {
     if (!string) {
       return this.getDefaultText()
     }
@@ -161,10 +173,10 @@ export class googleTranslate {
     try {
       const page = this.page
       // await page.waitForNavigation({waitUntil: 'networkidle0'});
-      await page.waitForTimeout(600)
+      await page.waitForTimeout(400)
       // await page.waitForTimeout(1300)
-      let input = await page.$('#source'),
-        html = ''
+      const input = await page.$('#source') as HTMLInputElement | null
+      let html = ''
       if (input) {
         await page.evaluate((el) => el.value = '', input)
         // try {
@@ -180,15 +192,21 @@ export class googleTranslate {
         await page.evaluate((el, string) => el.value = string, input, string)
         await page.waitForResponse(response => response.url().startsWith('https://translate.google.ru/translate_a/single'))
         await page.waitForSelector('.tlid-translation.translation', { visible: true })
-        let element = await page.$('.tlid-translation.translation')
+        const element = await page.$('.tlid-translation.translation')
         // await page.waitForTimeout(2200)
         await page.waitForTimeout(2000)
+        if (!element) {
+          throw new Error('Empty element: .tlid-translation.translation')
+        }
         html = await page.evaluate(el => el.innerHTML, element)
       } else {
-        input = await page.$('textarea')
-        await page.evaluate((el) => el.value = '', input)
-        await page.waitForTimeout(1400)
-        await page.evaluate((el, string) => el.value = string, input, string)
+        const textarea = await page.$('textarea')
+        if (!textarea) {
+          throw new Error('Empty textarea: textarea')
+        }
+        await page.evaluate((el) => el.value = '', textarea)
+        await page.waitForTimeout(800)
+        await page.evaluate((el, string) => el.value = string, textarea, string)
         await page.type('textarea', ' ', { delay: 10 })
         try {
           await page.waitForResponse(response =>
@@ -198,27 +216,35 @@ export class googleTranslate {
         } catch (e) {
           console.error('await response', e)
         }
-        await page.waitForTimeout(100)
+        await page.waitForTimeout(400)
         await page.waitForSelector('.KkbLmb', { visible: true })
-        let elements = await page.$$('.ryNqvb')
-        await page.waitForTimeout(2000)
-        for (let element of elements) {
-          let text = await page.evaluate(el => el.innerHTML, element)
+        const elements = await page.$$('.ryNqvb')
+        await page.waitForTimeout(500)
+        for (const element of elements) {
+          const text = await page.evaluate(el => el.innerHTML, element)
           // console.log(text, 'MY SUPER TEXT')
           html += `${text} \n`
         }
         if (html === '') {
-          throw new Error('Empty HTML')
+          const elements = await page.$$('.HwtZe')
+          for (const element of elements) {
+            const text = await page.evaluate(el => el.innerHTML, element)
+            // console.log(text, 'MY SUPER TEXT')
+            html += `${text} \n`
+          }
+          if (html === '') {
+            throw new Error('Empty HTML: ' + string)
+          }
         }
         // await page.waitForTimeout(2200)
       }
 
-      let result = fixHtmlText(html)
+      const result = fixHtmlText(html)
       if (string.length <= this.cacheStringLength) {
         this.translatorCache[string] = result
       }
       return result
-    } catch (e) {
+    } catch (e: any) {
       console.error('try to restart', e)
       throw new Error(e)
     }
@@ -230,4 +256,8 @@ export class googleTranslate {
     await this.browser.close()
     // process.exit()
   }
+}
+
+export {
+  GoogleTranslate,
 }
