@@ -17,6 +17,26 @@ class De24live extends abstractDomain {
         parseUrl: 'https://www.oe24.at/',
         category: ['Nachricht'],
       },
+      {
+        parseUrl: 'https://www.de24live.de/society',
+        category: ['SOCIETY'],
+      },
+      {
+        parseUrl: 'https://www.de24live.de/top-stories',
+        category: ['TOP STORIES'],
+      },
+      {
+        parseUrl: 'https://www.de24live.de/welt-international',
+        category: ['INTERNATIONAL'],
+      },
+      {
+        parseUrl: 'https://www.de24live.de/politik',
+        category: ['POLITIK'],
+      },
+      {
+        parseUrl: 'https://www.de24live.de/sport',
+        category: ['sport'],
+      },
     ]
   }
   async init (cbFunction) {

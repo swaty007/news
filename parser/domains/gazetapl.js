@@ -41,26 +41,26 @@ class Gazetapl extends abstractDomain {
         parseUrl: 'https://weekend.gazeta.pl/weekend/0,177342.html',
         category: ['HISTORIA'],
       },
-      // {
-      //   parseUrl: 'https://weekend.gazeta.pl/weekend/0,177343.html',
-      //   category: ['BIOGRAFIE'],
-      // },
-      // {
-      //   parseUrl: 'https://weekend.gazeta.pl/weekend/0,181991.html',
-      //   category: ['PODRÓŻE'],
-      // },
-      // {
-      //   parseUrl: 'https://weekend.gazeta.pl/weekend/0,177333.html',
-      //   category: ['ROZMOWA'],
-      // },
-      // {
-      //   parseUrl: 'https://kobieta.gazeta.pl/kobieta/0,0.html',
-      //   category: ['Kobieta'],
-      // },
-      // {
-      //   parseUrl: 'https://www.gazeta.pl/0,0.htm',
-      //   category: ['Kobieta'],
-      // },
+      {
+        parseUrl: 'https://weekend.gazeta.pl/weekend/0,177343.html',
+        category: ['BIOGRAFIE'],
+      },
+      {
+        parseUrl: 'https://weekend.gazeta.pl/weekend/0,181991.html',
+        category: ['PODRÓŻE'],
+      },
+      {
+        parseUrl: 'https://weekend.gazeta.pl/weekend/0,177333.html',
+        category: ['ROZMOWA'],
+      },
+      {
+        parseUrl: 'https://kobieta.gazeta.pl/kobieta/0,0.html',
+        category: ['Kobieta'],
+      },
+      {
+        parseUrl: 'https://www.gazeta.pl/0,0.htm',
+        category: ['Kobieta'],
+      },
     ]
     // this.parseUrl = 'https://fakty.tvn24.pl/fakty-o-swiecie,61'
   }

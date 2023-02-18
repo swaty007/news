@@ -94,6 +94,7 @@ wp-content/themes/index.php
 !.sequelizerc
 !parser
 !parser/*
+!tsconfig.json
 # ignore all mu-plugins, plugins, and themes
 
 

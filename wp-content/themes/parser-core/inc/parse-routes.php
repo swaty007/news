@@ -57,6 +57,7 @@ function insertResult($request)
             'nb',
             'zh',
             'pl',
+            'de',
         ];
         $category = [
             'uk' => [],
@@ -66,6 +67,7 @@ function insertResult($request)
             'nb' => [],
             'zh' => [],
             'pl' => [],
+            'de' => [],
         ];
         if (!empty($json_parsed[$langMain]['categories'])) {
             require_once(ABSPATH . '/wp-admin/includes/taxonomy.php');

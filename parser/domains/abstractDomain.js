@@ -13,7 +13,9 @@ class abstractDomain {
           console.error(err, 'error Request', data.url)
           reject()
         }
-        resolve(this.parseHtml(res.body))
+        setTimeout(() => {
+          resolve(this.parseHtml(res.body))
+        }, 500)
       })
     })
   }
