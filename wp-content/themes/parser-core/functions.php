@@ -16,6 +16,10 @@ function my_theme_enqueue_styles() {
 }
 
 function createPost ($post, $private = false, $category = []) {
+    $authorId = 2;
+    if (PARSER_SITR_TYPE === 'GREENAURA') {
+        $authorId = 10;
+    }
     $post_id =  wp_insert_post(array(
         'post_type' => 'post',
         'post_title' => $post['post_title'],
@@ -23,7 +27,7 @@ function createPost ($post, $private = false, $category = []) {
         'post_date_gmt' => empty($post['post_date_gmt']) ? '' : $post['post_date_gmt'],
         'post_excerpt' => $post['post_excerpt'],
 //	'post_name'      => <the name>,
-        'post_author'   => 2,
+        'post_author'   => $authorId,
         'post_status' => $private ? 'draft' : 'publish',
         'post_category' => $category,
         'tags_input' => $post['tags'],

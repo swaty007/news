@@ -2,6 +2,7 @@ import needle from 'needle'
 import { GoogleTranslate } from './googleTranslate'
 import { Gazetapl } from './domains/gazetapl'
 import { De24live } from './domains/de24live'
+import { Healthline } from './domains/healthline'
 import { validationService } from './helpers/helpers'
 import db from './models/index.js'
 
@@ -56,6 +57,8 @@ class Parser implements ParserInstance{
   }
 
   async startLoop () {
+    await this.initEmitter(Healthline)
+    console.log('finish Healthline go De24live')
     this.insertUrl = 'https://dmg.news/wp-json/parse/v1/insert'
     await this.initEmitter(De24live)
     console.log('Finish De24live go Gazetapl')
@@ -100,6 +103,56 @@ class Parser implements ParserInstance{
     const translatedPostData = await this.setPostLanguage(originalPost)
 
     await this.savePost(translatedPostData, originalPost.mainLang)
+    await this.db.Post.update({ status: 5 }, {
+      where: {
+        url: originalPost.url,
+      },
+    })
+  }
+
+  async newPostGreen (originalPost: localPost) {
+    const post = await this.db.Post.findOne({
+      where: {
+        name: originalPost.post_title,
+      },
+    })
+    if (post && post.status !== 1) {
+      console.log('unique post name', originalPost.url, post.url, post.status)
+      return
+    }
+    try {
+      await this.db.Post.create({
+        url: originalPost.url,
+        name: originalPost.post_title,
+        status: 1,
+        html: JSON.stringify(originalPost),
+      })
+    } catch (e: any) {
+      console.log('Database Error Create: ', e.message, e.errors, originalPost.url)
+    }
+    const translatedPostData = await this.setPostLanguage(originalPost)
+    this.insertUrl = 'https://green-aura.com.ua/wp-json/parse/v1/insert'
+    const greenPost = {
+      'en': translatedPostData.en,
+      'uk': translatedPostData.uk,
+      'ru': translatedPostData.ru,
+    }
+    await this.savePost(greenPost, originalPost.mainLang)
+    const otherPost = {
+      'en': translatedPostData.en,
+      'zh': translatedPostData.zh,
+      'de': translatedPostData.de,
+      'pl': translatedPostData.pl,
+      'da': translatedPostData.da,
+      'nb': translatedPostData.nb,
+    }
+    if (Math.random() > 0.5) {
+      this.insertUrl = 'https://dmg.news/wp-json/parse/v1/insert'
+    } else {
+      this.insertUrl = 'https://news.infinitum.tech/wp-json/parse/v1/insert'
+    }
+
+    await this.savePost(otherPost, originalPost.mainLang)
     await this.db.Post.update({ status: 5 }, {
       where: {
         url: originalPost.url,
