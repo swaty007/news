@@ -254,6 +254,7 @@ class GoogleTranslate{
     console.log(this.lang, ' Google Browser End ', this.totalRequest)
     await this.page.close()
     await this.browser.close()
+    await this.browser.disconnect()
     // process.exit()
   }
 }

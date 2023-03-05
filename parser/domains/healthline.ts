@@ -77,7 +77,7 @@ class Healthline extends abstractDomain implements Domain {
         post_excerpt = post_excerpt ? post_excerpt.trim() : ''
         let post_content = $('article.article-body').html()
         post_content = post_content ? fixHtmlText(post_content.trim()) : ''
-        if (!post_title || !post_content) {
+        if (!post_title || !post_content || post_title.length > 800) {
           console.error('Wrong Post Data: ', page)
           await this.db.Post.create({
             url: page,
