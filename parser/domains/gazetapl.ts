@@ -125,7 +125,7 @@ class Gazetapl extends abstractDomain implements Domain {
           post_excerpt = post_excerpt ? post_excerpt.trim() : ''
           let post_content = $('section.art_content').html()
           post_content = post_content ? fixHtmlText(post_content.trim()) : ''
-          if (!post_title || !post_content || post_title.length > 800) {
+          if (!post_title || !post_content || post_title.length > 800 || post_content.length < 1200) {
             console.error('Wrong Post Data: ', page)
             await this.db.Post.create({
               url: page,

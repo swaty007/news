@@ -211,13 +211,14 @@ class GoogleTranslate{
         try {
           await page.waitForResponse(response =>
             response.url().startsWith('https://translate.google.ru/_/TranslateWebserverUi/') ||
-            response.url().startsWith('https://play.google.com/log?format=json&hasfast=true') ||
-            response.url().startsWith('https://www.google.ru/log?format=json&hasfast=true'))
+            response.url().startsWith('https://play.google.com/log?format=json&hasfast=true'))
+            // response.url().startsWith('https://www.google.ru/log?format=json&hasfast=true')
         } catch (e) {
           console.error('await response', e)
         }
-        await page.waitForTimeout(400)
+        await page.waitForTimeout(800) //IMPORTANT: FOR CORRECT TRANSLATE
         await page.waitForSelector('.KkbLmb', { visible: true })
+        await page.waitForTimeout(500)
         const elements = await page.$$('.ryNqvb')
         await page.waitForTimeout(500)
         for (const element of elements) {

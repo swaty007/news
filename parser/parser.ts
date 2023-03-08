@@ -174,6 +174,7 @@ class Parser implements ParserInstance{
       if (translates['en']) {
         postToTranslate = translates['en']
       }
+      // console.log(postToTranslate, 'postToTranslate')
       try {
         translates[lang] = await this.translatePost(postToTranslate, lang)
       } catch (e) {
