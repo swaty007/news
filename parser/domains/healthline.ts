@@ -42,7 +42,11 @@ class Healthline extends abstractDomain implements Domain {
   }
   async startParse () {
     for (const entries of this.parseEntries) {
-      await this.searchArticles(entries)
+      try {
+        await this.searchArticles(entries)
+      } catch (err) {
+        console.log('searchArticles', err)
+      }
     }
     console.log('Finish Parse Healthline!')
   }

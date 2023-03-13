@@ -27,10 +27,18 @@ abstract class abstractDomain {
         // this.totalRequest.google += 1
         if (err) {
           console.error(err, 'error Request', data.url)
-          reject()
+          setTimeout(() => {
+            reject()
+          }, 500)
+          return
         }
         setTimeout(() => {
-          resolve(this.parseHtml(res.body))
+          if (res.body) {
+            resolve(this.parseHtml(res.body))
+          } else {
+            console.error('res.body', res.body)
+            reject()
+          }
         }, 500)
       })
     })
