@@ -57,14 +57,15 @@ class Parser implements ParserInstance{
   }
 
   async startLoop () {
+    this.insertUrl = 'https://news.infinitum.tech/wp-json/parse/v1/insert'
+    await this.initEmitter(Gazetapl)
+    console.log('Finish Gazetapl go Healthline')
+    this.insertUrl = 'https://news.infinitum.tech/wp-json/parse/v1/insert'
     await this.initEmitter(Healthline)
     console.log('finish Healthline go De24live')
     this.insertUrl = 'https://dmg.news/wp-json/parse/v1/insert'
     await this.initEmitter(De24live)
-    console.log('Finish De24live go Gazetapl')
-    this.insertUrl = 'https://news.infinitum.tech/wp-json/parse/v1/insert'
-    await this.initEmitter(Gazetapl)
-    console.log('Finish Gazetapl go startLoop')
+    console.log('Finish De24live go startLoop')
 
     setTimeout(() => {
       this.startLoop()
@@ -161,29 +162,50 @@ class Parser implements ParserInstance{
   }
 
   async setPostLanguage (originalPost: localPost): Promise<{ [key in Languages]?: RestAPIPost }> {
-    const { mainLang, url, ...post } = originalPost
-    const translates = {
-      [mainLang]: post,
-    }
-    for (const lang of this.languages) {
-      if (lang === mainLang) {
-        continue
+    //TODO: REWRITE TO NORMAL FUNCTION
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      const { mainLang, url, ...post } = originalPost
+      const translates = {
+        [mainLang]: post,
       }
-      let postToTranslate = post
-      // translates['ens'] = post
-      if (translates['en']) {
-        postToTranslate = translates['en']
+      for (const lang of this.languages) {
+        if (lang === mainLang) {
+          continue
+        }
+        let postToTranslate = post
+        if (translates['en']) {
+          postToTranslate = translates['en']
+        }
+        // console.log(postToTranslate, 'postToTranslate')
+        try {
+          const translator = this.translates.get(lang)
+          if (!translator) {
+            throw new Error('Didnt find this.translates.get(lang)')
+          }
+          if (translator.proxied) {
+            this.translatePost(postToTranslate, lang).then(result => {
+              translates[lang] = result
+              //console.log('translates async', Object.keys(translates).length)
+              if (Object.keys(translates).length >= this.translates.size) {
+                resolve(translates)
+              }
+            })
+          } else {
+            translates[lang] = await this.translatePost(postToTranslate, lang)
+          }
+        } catch (e) {
+          validationService(e)
+          console.log('error post pars:', postToTranslate)
+          reject(e)
+          throw new Error('setPostLanguage')
+        }
       }
-      // console.log(postToTranslate, 'postToTranslate')
-      try {
-        translates[lang] = await this.translatePost(postToTranslate, lang)
-      } catch (e) {
-        validationService(e)
-        console.log('error post pars:', postToTranslate)
-        throw new Error('setPostLanguage')
+      //console.log('translates', Object.keys(translates).length)
+      if (Object.keys(translates).length >= this.translates.size) {
+        resolve(translates)
       }
-    }
-    return translates
+    })
   }
 
   async translatePost (originalPost: RestAPIPost, lang: Languages): Promise<RestAPIPost> {

@@ -3,6 +3,8 @@ import pluginStealth from 'puppeteer-extra-plugin-stealth'
 import RecaptchaPlugin from 'puppeteer-extra-plugin-recaptcha'
 import { validationService, fixHtmlText, getCurrentPage } from './helpers/helpers'
 import { Browser, Page } from 'puppeteer'
+import needle from "needle"
+import { SocksProxyAgent } from "socks-proxy-agent"
 
 const recaptchaPlugin = RecaptchaPlugin({
   provider: { id: '2captcha', token: 'XXXXXXX' },
@@ -11,10 +13,23 @@ const recaptchaPlugin = RecaptchaPlugin({
 puppeteer.use(pluginStealth())
 puppeteer.use(recaptchaPlugin)
 
+// brew services start tor
+const torPorts = [
+  9050,
+  9051,
+  9052,
+  9053,
+  9054,
+  9055,
+  9056,
+  9057,
+]
+
 class GoogleTranslate{
   totalRequest: { time: number; requestGoogle: number }
   translatorCache: { [key: string]: string }
   cacheStringLength: number
+  proxied: boolean | string
   langMapper: { [key: string]: string }
   defaultText: string[]
   lang: string
@@ -28,6 +43,7 @@ class GoogleTranslate{
     }
     this.translatorCache = {}
     this.cacheStringLength = 50
+    this.proxied = false
     this.langMapper = {
       zh: 'zh-CN',
       nb: 'no',
@@ -44,11 +60,30 @@ class GoogleTranslate{
   }
 
   async init (): Promise<void> {
+    const torPort = torPorts.shift()
+    let torArgs = ''
+    if (torPort) {
+      const myAgent = new SocksProxyAgent(`socks5://127.0.0.1:${torPort}`)
+      myAgent.timeout = 10000
+      try {
+        const result = await needle('get', 'https://api.ipify.org/', { agent: myAgent })
+        console.log(result.body)
+        this.proxied = `socks5://127.0.0.1:${torPort}`
+        torArgs = `--proxy-server=socks5://127.0.0.1:${torPort}`
+      } catch (e) {
+        this.proxied = false
+        console.error('error connect proxy', e)
+      }
+    } else {
+      this.proxied = false
+    }
+
     this.browser = await puppeteer.launch({
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
         '--disable-dev-shm-usage',
+        torArgs,
       ],
       headless: true,
       defaultViewport: {

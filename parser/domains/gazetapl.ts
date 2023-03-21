@@ -1,5 +1,5 @@
 import { abstractDomain } from './abstractDomain'
-import { validationService, fixHtmlText } from '../helpers/helpers'
+import { fixHtmlText } from '../helpers/helpers'
 
 
 class Gazetapl extends abstractDomain implements Domain {
@@ -8,6 +8,7 @@ class Gazetapl extends abstractDomain implements Domain {
 
   constructor (db: { [key: string]: any }) {
     super(db)
+    this.requestTimeout = 700
     this.mainLang = 'pl'
     this.parseEntries = [
       {

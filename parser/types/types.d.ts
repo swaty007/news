@@ -36,6 +36,7 @@ interface Class<T> {
 
 interface Domain {
   events: events.EventEmitter
+  requestTimeout: number
   parseEntries: { parseUrl: string; category: string[] }[]
   mainLang: Languages
   init(cbFunction: Parser): Promise<events.EventEmitter>

@@ -1,5 +1,5 @@
 import { abstractDomain } from './abstractDomain'
-import { validationService, fixHtmlText } from '../helpers/helpers'
+import { fixHtmlText } from '../helpers/helpers'
 
 
 class De24live extends abstractDomain implements Domain {
