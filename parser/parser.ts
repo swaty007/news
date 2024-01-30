@@ -186,12 +186,13 @@ class Parser implements ParserInstance{
           if (translator.proxied) {
             this.translatePost(postToTranslate, lang).then(result => {
               translates[lang] = result
-              //console.log('translates async', Object.keys(translates).length)
+              console.log('translates async', Object.keys(translates).length)
               if (Object.keys(translates).length >= this.translates.size) {
                 resolve(translates)
               }
             })
           } else {
+            console.log('translates not async', Object.keys(translates).length)
             translates[lang] = await this.translatePost(postToTranslate, lang)
           }
         } catch (e) {
@@ -201,7 +202,7 @@ class Parser implements ParserInstance{
           throw new Error('setPostLanguage')
         }
       }
-      //console.log('translates', Object.keys(translates).length)
+      console.log('translates', Object.keys(translates).length)
       if (Object.keys(translates).length >= this.translates.size) {
         resolve(translates)
       }

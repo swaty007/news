@@ -1,13 +1,16 @@
-import * as cheerio from 'cheerio'
+// import * as cheerio from 'cheerio'
 import fs from 'fs'
 import path from 'path'
-import { validationService, fixHtmlText } from './helpers/helpers.js'
+import { fileURLToPath } from 'url'
+// import { validationService, fixHtmlText } from './helpers/helpers.js'
 import puppeteer from 'puppeteer-extra'
 import pluginStealth from 'puppeteer-extra-plugin-stealth'
 import RecaptchaPlugin from 'puppeteer-extra-plugin-recaptcha'
 import mysql from 'mysql'
 import { portfolioBD } from '../.env.js'
 
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const recaptchaPlugin = RecaptchaPlugin({
   provider: { id: '2captcha', token: 'XXXXXXX' },
@@ -107,9 +110,25 @@ class makePorfolio {
         url: 'https://zoomstore.com.ua/',
       },
       {
-        name: '',
-        url: '',
+        name: 'Localtrade',
+        url: 'https://localtrade.cc/',
       },
+      {
+        name: 'Yurchenko',
+        url: 'https://yurchenko.ua/',
+      },
+      {
+        name: 'Клиника Таргет',
+        url: 'https://www.clinic-target.com/',
+      },
+      {
+        name: 'Zoom Store',
+        url: 'https://zoomstore.com.ua/',
+      },
+      // {
+      //   name: '',
+      //   url: '',
+      // },
     ]
   }
 
@@ -117,6 +136,10 @@ class makePorfolio {
       await puppeteer.launch({
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
         headless: true,
+        handleSIGINT: true, // <boolean> Close the browser process on Ctrl-C. Defaults to true.
+        handleSIGTERM: true, // <boolean> Close the browser process on SIGTERM. Defaults to true.
+        handleSIGHUP: true, // <boolean> Close the browser process on SIGHUP. Defaults to true.
+        executablePath: '/opt/homebrew/bin/chromium',
       }).then(async browser => {
         this.browserComp = browser
           const page = this.pageComp = await browser.newPage()
@@ -125,6 +148,10 @@ class makePorfolio {
       await puppeteer.launch({
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
         headless: true,
+        handleSIGINT: true, // <boolean> Close the browser process on Ctrl-C. Defaults to true.
+        handleSIGTERM: true, // <boolean> Close the browser process on SIGTERM. Defaults to true.
+        handleSIGHUP: true, // <boolean> Close the browser process on SIGHUP. Defaults to true.
+        executablePath: '/opt/homebrew/bin/chromium',
       }).then(async browser => {
         this.browserDesktop = browser
         const page = this.pageDesktop = await browser.newPage()
@@ -134,6 +161,10 @@ class makePorfolio {
       await puppeteer.launch({
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
         headless: true,
+        handleSIGINT: true, // <boolean> Close the browser process on Ctrl-C. Defaults to true.
+        handleSIGTERM: true, // <boolean> Close the browser process on SIGTERM. Defaults to true.
+        handleSIGHUP: true, // <boolean> Close the browser process on SIGHUP. Defaults to true.
+        executablePath: '/opt/homebrew/bin/chromium',
       }).then(async browser => {
         this.browserMobile = browser
         const page = this.pageMobile = await browser.newPage()
