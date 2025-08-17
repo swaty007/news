@@ -63,7 +63,7 @@ class Parser implements ParserInstance{
     this.insertUrl = 'https://news.infinitum.tech/wp-json/parse/v1/insert'
     await this.initEmitter(Healthline)
     console.log('finish Healthline go De24live')
-    this.insertUrl = 'https://dmg.news/wp-json/parse/v1/insert'
+    this.insertUrl = 'https://news.infinitum.tech/wp-json/parse/v1/insert' // domain disabled
     await this.initEmitter(De24live)
     console.log('Finish De24live go startLoop')
 
@@ -147,11 +147,7 @@ class Parser implements ParserInstance{
       'da': translatedPostData.da,
       'nb': translatedPostData.nb,
     }
-    if (Math.random() > 0.5) {
-      this.insertUrl = 'https://dmg.news/wp-json/parse/v1/insert'
-    } else {
-      this.insertUrl = 'https://news.infinitum.tech/wp-json/parse/v1/insert'
-    }
+    this.insertUrl = 'https://news.infinitum.tech/wp-json/parse/v1/insert'
 
     await this.savePost(otherPost, originalPost.mainLang)
     await this.db.Post.update({ status: 5 }, {

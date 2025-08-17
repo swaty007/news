@@ -30,7 +30,7 @@ function createPost ($post, $private = false, $category = []) {
         'post_author'   => $authorId,
         'post_status' => $private ? 'draft' : 'publish',
         'post_category' => $category,
-        'tags_input' => $post['tags'],
+        'tags_input' => [], //$post['tags'],
     ));
     wp_set_post_categories($post_id, $category, true);
 //    wp_set_post_categories($post_id, $post['categories'], true);
@@ -88,12 +88,21 @@ add_filter( 'the_content', 'updatePostContent', 1000);
 function updatePostContent( $content ) {
     global $post;
     $lang = pll_get_post_language($post->ID);
-    $posts = get_posts([
-        'post_type' => 'post',
-        'post_status' => ['publish'],
-        'posts_per_page' => -1,
-        'lang' => $lang,
-    ]);
+    $cache_key = 'posts_list_' . $lang;
+    $posts = get_transient( $cache_key );
+    if ( false === $posts ) {
+        // Если в кеше пусто — выполняем запрос
+        $posts = get_posts([
+            'post_type' => 'post',
+            'post_status' => ['publish'],
+            'posts_per_page' => -1,
+            'lang' => $lang,
+        ]);
+
+        // Сохраняем в кеш на 12 часов
+        set_transient( $cache_key, $posts, 12 * HOUR_IN_SECONDS );
+    }
+
     foreach($posts as $item) {
         if ($item->ID === $post->ID) continue;
 //        $titles = explode('.', $post->post_title);

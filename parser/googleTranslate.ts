@@ -63,9 +63,9 @@ class GoogleTranslate{
     const torPort = torPorts.shift()
     let torArgs = ''
     if (torPort) {
-      const myAgent = new SocksProxyAgent(`socks5://127.0.0.1:${torPort}`)
-      myAgent.timeout = 10000
       try {
+        const myAgent = new SocksProxyAgent(`socks5://127.0.0.1:${torPort}`)
+        myAgent.timeout = 10000
         const result = await needle('get', 'https://api.ipify.org/', { agent: myAgent })
         console.log(result.body)
         this.proxied = `socks5://127.0.0.1:${torPort}`
@@ -85,7 +85,7 @@ class GoogleTranslate{
         '--disable-dev-shm-usage',
         torArgs,
       ],
-      headless: true,
+      headless: 'new',
       defaultViewport: {
         width: 980,
         height: 600,
@@ -93,7 +93,8 @@ class GoogleTranslate{
       handleSIGINT: true, // <boolean> Close the browser process on Ctrl-C. Defaults to true.
       handleSIGTERM: true, // <boolean> Close the browser process on SIGTERM. Defaults to true.
       handleSIGHUP: true, // <boolean> Close the browser process on SIGHUP. Defaults to true.
-      executablePath: '/opt/homebrew/bin/chromium',
+      // executablePath: '/opt/homebrew/bin/chromium',
+      // executablePath: '/usr/bin/google-chrome',
     })
     try {
       // const page = this.page = await browser.newPage()

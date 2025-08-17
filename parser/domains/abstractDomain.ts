@@ -44,9 +44,9 @@ abstract class abstractDomain {
     //initProxy
     for (const torPort of torPorts) {
       if (torPort) {
-        const myAgent = new SocksProxyAgent(`socks5://127.0.0.1:${torPort}`)
-        myAgent.timeout = 10000
         try {
+          const myAgent = new SocksProxyAgent(`socks5://127.0.0.1:${torPort}`)
+          myAgent.timeout = 10000
           const result = await needle('get', 'https://api.ipify.org/', { agent: myAgent })
           console.log('result.body domain proxy', result.body)
           this.proxies.push(myAgent)
