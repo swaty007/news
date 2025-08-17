@@ -30,7 +30,7 @@ function createPost ($post, $private = false, $category = []) {
         'post_author'   => $authorId,
         'post_status' => $private ? 'draft' : 'publish',
         'post_category' => $category,
-        'tags_input' => $post['tags'],
+        'tags_input' => [], //$post['tags'],
     ));
     wp_set_post_categories($post_id, $category, true);
 //    wp_set_post_categories($post_id, $post['categories'], true);
